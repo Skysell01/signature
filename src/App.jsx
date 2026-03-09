@@ -15,6 +15,8 @@ import SignatureRecord from "./pages/SignatureRecord";
 import SignatureOrderConfirmation from "./pages/SignatureOrderConfirmation";
 import Privacy from "./pages/Privacy";
 import Contact from "./pages/Contact";
+import About from "./pages/About";
+
 import SignatureAbondentReport from "./pages/AbondedentReport";
 
 import SignatureRag from "./pages/SignatureRag";
@@ -102,6 +104,7 @@ function App() {
           <Route path="/signature-try" element={<SignatureTry />} />
             <Route path="/signature-new-v2" element={<SignatureNewRedesignedV2/>} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/about" element={<About />} />
 
           {/* Old routes */}
           {/* <Route path="/signature-cart" element={<SignatureCart />} /> */}

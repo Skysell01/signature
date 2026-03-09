@@ -128,7 +128,7 @@ export default function PolicyPage() {
               <a
                 key={s.id}
                 href={`#${s.id}`}
-                className="group rounded-2xl border border-pink-100 bg-white/70 backdrop-blur p-4 hover:shadow-soft transition-shadow"
+                className="group rounded-2xl border border-pink-100 bg-black/70 backdrop-blur p-4 hover:shadow-soft transition-shadow"
               >
                 <div className="flex items-center justify-between">
                   <span className="font-semibold text-brand-800">{s.title}</span>
@@ -146,7 +146,7 @@ export default function PolicyPage() {
       {/* Content Section */}
       <section className="px-6 sm:px-10">
         <div className="mx-auto max-w-5xl pb-20">
-          <div className="rounded-3xl border border-pink-100 bg-white/80 backdrop-blur shadow-soft p-6 sm:p-10">
+          <div className="rounded-3xl border border-pink-100 bg-black/80 backdrop-blur shadow-soft p-6 sm:p-10">
             <article className="prose-legal space-y-12">
               {sections.map((s) => (
                 <section key={s.id} id={s.id} className="scroll-mt-28">

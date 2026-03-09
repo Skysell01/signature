@@ -108,7 +108,7 @@ const SignatureLimitedSlotsRag = () => {
         {/* Stat 3 */}
         <div className="text-center">
           <div className="text-sm text-blue-600 font-medium mb-1">Design Options</div>
-          <div className="text-3xl font-bold text-blue-900">3</div>
+          <div className="text-3xl font-bold text-blue-900">5</div>
         </div>
 
         {/* Buttons row */}
@@ -124,6 +124,12 @@ const SignatureLimitedSlotsRag = () => {
             className="inline-flex items-center justify-center px-4 py-2 border-2 border-blue-300 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             Contact Us
+          </Link>
+         <Link
+            to="/contact"
+            className="inline-flex items-center justify-center px-4 py-2 border-2 border-blue-300 rounded-lg text-sm font-medium text-blue-700 bg-blue-50 hover:bg-blue-100 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          >
+             About
           </Link>
         </div>
       </div>

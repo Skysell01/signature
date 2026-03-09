@@ -147,6 +147,12 @@ const SignatureLimitedSlots = () => {
               >
                 Contact Us
               </Link>
+              <Link
+                to="/about"
+                className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              >
+                About Us
+              </Link>
             </div>
           </div>
         </div>
