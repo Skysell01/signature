@@ -142,6 +142,30 @@ const SignatureLimitedSlots = () => {
                 Privacy Policy
               </Link>
               <Link
+                to="/privacy"
+                className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              >
+                 Refund & Return Policy
+              </Link>
+              <Link
+                to="/privacy"
+                className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              >
+                Shipping Policy
+              </Link>
+              <Link
+                to="/privacy"
+                className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              >
+                 Data Retention Policy
+              </Link>
+              <Link
+                to="/privacy"
+                className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
+              >
+                 Terms & Condition
+              </Link>
+              <Link
                 to="/contact"
                 className="inline-flex items-center justify-center px-4 py-2 border border-gray-300 rounded-lg text-sm font-medium text-gray-800 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-gray-200"
               >

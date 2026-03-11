@@ -41,7 +41,7 @@ const SignatureFooter = () => {
               <span className="text-gray-400 line-through text-lg">₹4999</span>
               <span className="text-2xl font-bold text-gray-800">₹489</span>
             </div>
-            <span className="text-sm text-red-600 font-medium">Last 2 slots left</span>
+            <span className="text-sm text-red-600 font-medium">Last 2 slots left only for 15min</span>
           </div>
           <SignatureCTA size="small" width="fit-content" />
         </div>

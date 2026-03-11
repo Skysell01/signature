@@ -69,7 +69,7 @@ const SignatureConsultationForm = ({ onSubmit, formData, setFormData }) => {
                   type="text"
                   value={formData.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all duration-200 ${errors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  className={`w-full text-black px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all duration-200 ${errors.name ? 'border-red-300 bg-red-50' : 'border-gray-300'
                     }`}
                   placeholder="Enter your full name"
                 />
@@ -87,7 +87,7 @@ const SignatureConsultationForm = ({ onSubmit, formData, setFormData }) => {
                   type="email"
                   value={formData.email}
                   onChange={(e) => handleInputChange('email', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all duration-200 ${errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  className={`w-full text-black px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all duration-200 ${errors.email ? 'border-red-300 bg-red-50' : 'border-gray-300'
                     }`}
                   placeholder="Enter your email"
                 />
@@ -108,7 +108,7 @@ const SignatureConsultationForm = ({ onSubmit, formData, setFormData }) => {
                   type="tel"
                   value={formData.phoneNumber}
                   onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all duration-200 ${errors.phoneNumber ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  className={`w-full text-black px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all duration-200 ${errors.phoneNumber ? 'border-red-300 bg-red-50' : 'border-gray-300'
                     }`}
                   placeholder="Enter your phone number"
                 />
@@ -126,7 +126,7 @@ const SignatureConsultationForm = ({ onSubmit, formData, setFormData }) => {
                   type="text"
                   value={formData.profession}
                   onChange={(e) => handleInputChange('profession', e.target.value)}
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all duration-200 ${errors.profession ? 'border-red-300 bg-red-50' : 'border-gray-300'
+                  className={`w-full text-black px-4 py-3 border rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all duration-200 ${errors.profession ? 'border-red-300 bg-red-50' : 'border-gray-300'
                     }`}
                   placeholder="Enter your profession"
                 />
@@ -146,7 +146,7 @@ const SignatureConsultationForm = ({ onSubmit, formData, setFormData }) => {
                 value={formData.remarks}
                 onChange={(e) => handleInputChange('remarks', e.target.value)}
                 rows="4"
-                className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all duration-200 resize-none"
+                className="w-full text-black px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-gray-800 focus:border-transparent transition-all duration-200 resize-none"
                 placeholder="Any specific requirements or remarks for your signature design..."
               />
               <p className="text-xs text-gray-500">

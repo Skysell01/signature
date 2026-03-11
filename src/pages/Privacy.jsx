@@ -76,6 +76,18 @@ export default function PolicyPage() {
         )
       },
       {
+        id: "Data-retention-policy",
+        title: "Data Retention Policy",
+        content: (
+          <div className="space-y-4">
+            <ul className="list-disc pl-6 space-y-2">
+              <li><strong>Data Collection:</strong> The abandoned data (such as email address or interaction data) may be retained and used for marketing and retargeting purposes, including showing relevant advertisements or sending follow-up communications related to the service or product the user showed interest in.</li>
+              <li><strong>Security:</strong> We retain such data only for a limited period necessary for retargeting and marketing optimization. After this period, the data is either deleted or anonymized.</li>
+            </ul>
+          </div>
+        )
+      },
+      {
         id: "terms",
         title: "Terms & Conditions",
         content: (
@@ -161,8 +173,8 @@ export default function PolicyPage() {
             </article>
 
             {/* Footer note */}
-            <div className="mt-12 rounded-2xl bg-gradient-to-r from-brand-50 to-pink-50 p-5 border border-pink-100">
-              <p className="text-sm text-slate-700">
+            <div className="mt-12 rounded-2xl bg-black-to-r from-brand-50 to-pink-50 p-5 border border-pink-100">
+              <p className="text-sm text-white-700">
                 <strong>Note:</strong> By using our website, you agree to these policies.  
                 If you have questions,{" "}
                 <a className="underline" href="mailto:orders@thesignaturestudio.in">contact us</a>.

@@ -83,8 +83,8 @@ export default function Contact() {
             </article>
 
             {/* Footer note */}
-            <div className="mt-12 rounded-2xl bg-gradient-to-r from-brand-50 to-pink-50 p-5 border border-pink-100">
-              <p className="text-sm text-slate-700">
+            <div className="mt-12 rounded-2xl bg-black from-brand-50 to-pink-50 p-5 border border-pink-100">
+              <p className="text-sm text-white-700">
                 <strong>Note:</strong> By using our website, you agree to these policies.  
                 If you have questions,{" "}
                 <a className="underline" href="mailto:orders@thesignaturestudio.in">contact us</a>.
