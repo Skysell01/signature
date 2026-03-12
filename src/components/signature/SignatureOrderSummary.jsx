@@ -13,7 +13,7 @@ const SignatureOrderSummary = ({ subtotal, discount, total, isCheckingOut, onChe
     setIsPressed(true);
     
     // Call the actual checkout function immediately
-    onCheckout();
+    // onCheckout();
  
     
     window.location.href = "/signature-order-confirmation?orderId=TEST12345";
