@@ -225,7 +225,7 @@ function SignatureCartCashFree() {
       console.log('Price calculation update:', {
         cartSubtotal,
         additionalSubtotal,
-        subtotal,
+        subtotal, 
         couponCode,
         couponDiscount: `${couponDiscount}%`,
         couponDiscountAmount,
@@ -234,6 +234,33 @@ function SignatureCartCashFree() {
       });
     }
   }, [subtotal, couponDiscountAmount, total, selectedAdditionalProducts.length]);
+
+// create dummy order for testing
+const createOrderWithoutPayment = async () => {
+  try {
+    const res = await axios.post(`${BACKEND_URL}/api/lander4/create-order`, {
+      amount: total || 1,
+      fullName: consultationFormData?.name,
+      email: consultationFormData?.email,
+      phoneNumber: consultationFormData?.phoneNumber,
+      profession: consultationFormData?.profession,
+      remarks: consultationFormData?.remarks,
+      additionalProducts: selectedAdditionalProducts.map(p => p.title)
+    });
+
+    const orderId = res.data?.data?._id;
+
+    navigate("/signature-order-confirmation", {
+      state: {
+        orderId: orderId,
+        amount: total
+      }
+    });
+
+  } catch (err) {
+    console.error("Order creation failed", err);
+  }
+};
 
   // Create Payment Session
   const createPaymentSession = async () => {
@@ -249,8 +276,8 @@ function SignatureCartCashFree() {
       const abandonedCartRes = await axios.post(
         `${BACKEND_URL}/api/lander4/create-order-abd`,
         {
-          amount: total,
-          // amount: 1,
+          // amount: total,
+          amount: 1,
           fullName: consultationFormData?.name,
           email: consultationFormData?.email,
           phoneNumber: consultationFormData?.phoneNumber,
@@ -278,8 +305,8 @@ function SignatureCartCashFree() {
       localStorage.setItem(
         "orderData",
         JSON.stringify({
-          // amount: 1,
-          amount: total,
+          amount: 1,
+          // amount: total,
           fullName: consultationFormData?.name,
           email: consultationFormData?.email,
           phoneNumber: consultationFormData?.phoneNumber,
@@ -295,8 +322,8 @@ function SignatureCartCashFree() {
       const apiResponse = await axios.post(
         `${BACKEND_URL}/api/payment/create-session`,
         {
-          amount: total,
-          // amount: 1,
+          // amount: total,
+          amount: 1,
           fullName: consultationFormData?.name,
           email: consultationFormData?.email,
           phoneNumber: consultationFormData?.phoneNumber,
@@ -589,7 +616,7 @@ function SignatureCartCashFree() {
                         : "translate-y-8 opacity-0"
                     }`}
                   >
-                    <SignatureOrderSummary
+                    {/* <SignatureOrderSummary
                       subtotal={subtotal}
                       discount={discount}
                       total={total}
@@ -600,7 +627,22 @@ function SignatureCartCashFree() {
                       couponDiscountAmount={couponDiscountAmount}
                       isCheckingOut={isCheckingOut}
                       onCheckout={doPayment}
-                    />
+                    /> */}
+                    
+{/* dummy order summary */}
+
+  <SignatureOrderSummary
+  subtotal={subtotal}
+  discount={discount}
+  total={total}
+  totalMrp={totalMrp}
+  discountMrp={discountMrp}
+  couponCode={couponCode}
+  couponDiscount={couponDiscount}
+  couponDiscountAmount={couponDiscountAmount}
+  isCheckingOut={isCheckingOut}
+  onCheckout={createOrderWithoutPayment}
+/>
                   </div>
                 </div>
               </div>
@@ -670,7 +712,7 @@ function SignatureCartCashFree() {
                         : "translate-y-8 opacity-0"
                     }`}
                   >
-                    <SignatureOrderSummary
+                    {/* <SignatureOrderSummary
                       subtotal={subtotal}
                       discount={discount}
                       totalMrp={totalMrp}
@@ -681,7 +723,19 @@ function SignatureCartCashFree() {
                       couponDiscountAmount={couponDiscountAmount}
                       isCheckingOut={isCheckingOut}
                       onCheckout={doPayment}
-                    />
+                    /> */}
+                    <SignatureOrderSummary
+  subtotal={subtotal}
+  discount={discount}
+  total={total}
+  totalMrp={totalMrp}
+  discountMrp={discountMrp}
+  couponCode={couponCode}
+  couponDiscount={couponDiscount}
+  couponDiscountAmount={couponDiscountAmount}
+  isCheckingOut={isCheckingOut}
+  onCheckout={createOrderWithoutPayment}
+/>
                   </div>
                 </div>
               </div>

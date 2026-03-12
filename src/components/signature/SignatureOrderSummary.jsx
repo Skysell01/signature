@@ -1,18 +1,23 @@
 import React, { useState } from 'react';
 import { Shield, Sparkles } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 
 const SignatureOrderSummary = ({ subtotal, discount, total, isCheckingOut, onCheckout, totalMrp, discountMrp, couponCode, couponDiscount, couponDiscountAmount }) => {
   const [isPressed, setIsPressed] = useState(false);
+ const navigate = useNavigate();
 
   const handleButtonClick = async () => {
-    if (isCheckingOut) return;
+    // if (isCheckingOut) return;
     
     // Add pressed effect
     setIsPressed(true);
     
     // Call the actual checkout function immediately
     onCheckout();
+ 
     
+    window.location.href = "/signature-order-confirmation?orderId=TEST12345";
+ 
     // Reset pressed effect after a short delay
     setTimeout(() => {
       setIsPressed(false);

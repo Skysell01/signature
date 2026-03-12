@@ -5,10 +5,15 @@ import SignatureNavbar from '../components/signature/SignatureNavbar';
 import SignatureCTA from '../components/signature/SignatureCTA';
 
 const SignatureOrderConfirmation = () => {
-  const { orderId, amount } = useLocation().state;
+  // const { orderId, amount } = useLocation().state;
 
+// const location = useLocation();
 // const orderId = "1234567890";
-// const amount = 1000;
+const amount = 1000;
+// const { orderId, amount } = location.state || {};
+if (!orderId) {
+  navigate("/signature-cart");
+}
   
   useEffect(() => {
     window.scrollTo({ top: 0, left: 0, behavior: "instant" });
