@@ -14,6 +14,7 @@ export default function Contact() {
            
             <ul className="list-disc pl-6 space-y-2">
                <li><strong>Company Name:</strong> SPEKLIO MEDIA PRIVATE LIMITED</li>
+               <li><strong>Address :</strong>C-910, CID Colony, Mahanagar Lucknow, Uttar Pradesh 226006</li>
                <li><strong>GST No :</strong>09ABRCS9008B1Z3</li>
                <li><strong>Phone :</strong>9198050093</li>
               <li><strong>Email Support:</strong> <a className="underline" href="mailto:orders@thesignaturestudio.in">orders@thesignaturestudio.in</a></li>
