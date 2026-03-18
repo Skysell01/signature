@@ -106,6 +106,8 @@ export default function PolicyPage() {
         content: (
           <div className="space-y-4">
             <ul className="list-disc pl-6 space-y-2">
+              <li><strong>Company Name:</strong> <a className="underline" href="mailto:orders@thesignaturestudio.in">ASTRASOUL DIGITAL LLP</a></li>
+             <li><strong>Phone :</strong>9198050093</li>
               <li><strong>Email Support:</strong> <a className="underline" href="mailto:orders@thesignaturestudio.in">orders@thesignaturestudio.in</a></li>
               <li><strong>Working Hours:</strong> Monday–Saturday, 10:00 AM – 6:00 PM (IST)</li>
               <li><strong>Response Time:</strong> We respond to all inquiries within 24 hours. Urgent issues are prioritised.</li>
