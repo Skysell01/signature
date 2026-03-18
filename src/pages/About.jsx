@@ -12,7 +12,7 @@ export default function About() {
          <div className="space-y-4">
   <p>
     <strong>TheSignatureStudio</strong> is a digital product platform operated by 
-    <strong> SPEKLIO MEDIA PRIVATE LIMITED</strong>. It focuses on creating 
+    <strong> ASTRASOUL DIGITAL LLP</strong>. It focuses on creating 
     personalized and creative digital products designed to provide customers 
     with unique and meaningful experiences.
   </p>
@@ -25,7 +25,7 @@ export default function About() {
   </p>
 
   <p>
-    As part of SPEKLIO MEDIA PRIVATE LIMITED, we are committed to maintaining 
+    As part of ASTRASOUL DIGITAL LLP, we are committed to maintaining 
     high standards of quality, customer satisfaction, and innovation while 
     delivering reliable digital services to customers across India.
   </p>
@@ -59,7 +59,7 @@ export default function About() {
           <div className="space-y-4">
             <ul className="list-disc pl-6 space-y-2">
               <li>
-                <strong>Company Name:</strong> SPEKLIO MEDIA PRIVATE LIMITED
+                <strong>Company Name:</strong> ASTRASOUL DIGITAL LLP
               </li>
 
               <li>
@@ -128,7 +128,7 @@ export default function About() {
           </div>
 
           <h1 className="mt-4 text-3xl sm:text-5xl font-extrabold tracking-tight text-brand-900">
-            About Us • SPEKLIO MEDIA PRIVATE LIMITED
+            About Us • ASTRASOUL DIGITAL LLP
           </h1>
 
           <p className="mt-3 text-slate-600 max-w-2xl">
@@ -182,8 +182,8 @@ export default function About() {
 
             {/* Footer note */}
             <div className="mt-12 rounded-2xl bg-gradient-to-r from-brand-50 to-pink-50 p-5 border border-pink-100">
-              <p className="text-sm text-slate-700">
-                <strong>SPEKLIO MEDIA PRIVATE LIMITED</strong> operates in
+              <p className="text-sm text-white-700">
+                <strong>ASTRASOUL DIGITAL LLP</strong> operates in
                 compliance with applicable Indian laws and regulations.
               </p>
 
@@ -201,7 +201,7 @@ export default function About() {
           {/* Bottom Footer */}
           <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="text-slate-600 text-sm">
-              © {new Date().getFullYear()} SPEKLIO MEDIA PRIVATE LIMITED. All
+              © {new Date().getFullYear()} ASTRASOUL DIGITAL LLP. All
               Rights Reserved.
             </div>
 

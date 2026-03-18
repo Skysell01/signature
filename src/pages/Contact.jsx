@@ -13,7 +13,7 @@ export default function Contact() {
           <div className="space-y-4">
            
             <ul className="list-disc pl-6 space-y-2">
-               <li><strong>Company Name:</strong> SPEKLIO MEDIA PRIVATE LIMITED</li>
+               <li><strong>Company Name:</strong> ASTRASOUL DIGITAL LLP</li>
                <li><strong>Address :</strong>C-910, CID Colony, Mahanagar Lucknow, Uttar Pradesh 226006</li>
                <li><strong>GST No :</strong>09ABRCS9008B1Z3</li>
                <li><strong>Phone :</strong>9198050093</li>
