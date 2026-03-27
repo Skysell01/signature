@@ -356,70 +356,76 @@ const createOrderWithoutPayment = async () => {
   };
 
   const doPayment = async () => {
-    // Check if SDK is initialized
-    if (!sdkInitialized || !cashfree) {
-      toast.error("Payment system is not ready. Please try again in a moment.");
-      return;
-    }
+  // Check if SDK is initialized
+  if (!sdkInitialized || !cashfree) {
+    toast.error("Payment system is not ready. Please try again in a moment.");
+    return;
+  }
 
-    // setLoading(true);
-    setIsCheckingOut(true);
+  setIsCheckingOut(true);
 
+  try {
     const paymentSessionId = await createPaymentSession();
     console.log("paymentsessionid", paymentSessionId);
 
     if (!paymentSessionId) {
+      toast.error("Unable to initiate payment. Try again.");
       return;
     }
 
-    try {
-      const checkoutOptions = {
-        paymentSessionId: paymentSessionId,
-        redirectTarget: "_self",
-        onSuccess: function (data) {
-          console.log("Payment successful:", data);
-          // Store order data for verification page
-          localStorage.setItem(
-            "orderData",
-            JSON.stringify({
-              // amount: 1,
-              amount: total,
-              fullName: consultationFormData?.name,
-              email: consultationFormData?.email,
-              phoneNumber: consultationFormData?.phoneNumber,
-              profession: consultationFormData?.profession,
-              remarks: consultationFormData?.remarks,
-              additionalProducts: selectedAdditionalProducts.map(
-                (product) => product.title
-              ),
-            })
-          );
-          sendWhatsappNotification(consultationFormData);
+    // ✅ OPEN CASHFREE MODAL
+    const result = await cashfree.checkout({
+      paymentSessionId: paymentSessionId,
+      redirectTarget: "_modal",
+    });
 
-          // Navigate to order confirmation page for verification
-          navigate("/signature-order-confirmation-cashfree", {
-            state: {
-              orderId: data.orderId,
-              amount: total,
-              paymentMethod: "Cashfree",
-            },
-          });
-        },
-        onFailure: function (data) {
-          console.log("Payment failed:", data);
-          toast.error("Payment failed. Please try again.");
-        },
-      };
+    console.log("Payment Result:", result);
 
-      cashfree.checkout(checkoutOptions);
-    } catch (error) {
-      console.error("Error during payment:", error);
-      toast.error("An error occurred during payment. Please try again.");
-    } finally {
-      setIsCheckingOut(false);
-      // setLoading(false);
+    // ✅ STORE ORDER DATA
+    localStorage.setItem(
+      "orderData",
+      JSON.stringify({
+        amount: total,
+        fullName: consultationFormData?.name,
+        email: consultationFormData?.email,
+        phoneNumber: consultationFormData?.phoneNumber,
+        profession: consultationFormData?.profession,
+        remarks: consultationFormData?.remarks,
+        additionalProducts: selectedAdditionalProducts.map(
+          (product) => product.title
+        ),
+      })
+    );
+
+    // ✅ OPTIONAL: send notification
+    sendWhatsappNotification(consultationFormData);
+
+    // ✅ CHECK STATUS (SAFE CHECK)
+    const paymentStatus = result?.paymentDetails?.paymentStatus;
+
+    if (paymentStatus === "SUCCESS") {
+      // 🎉 SUCCESS → redirect
+      navigate("/signature-order-confirmation-cashfree", {
+        state: {
+          orderId: result?.orderId,
+          amount: total,
+          paymentMethod: "Cashfree",
+        },
+      });
+    } else if (paymentStatus === "FAILED") {
+      toast.error("Payment failed. Please try again.");
+    } else {
+      // ⚠️ unknown / user closed modal
+      toast.info("Payment was not completed.");
     }
-  };
+
+  } catch (error) {
+    console.error("Error during payment:", error);
+    toast.error("Something went wrong during payment.");
+  } finally {
+    setIsCheckingOut(false);
+  }
+};
   async function sendWhatsappNotification(consultationFormData) {
     try {
       const response = await fetch(
