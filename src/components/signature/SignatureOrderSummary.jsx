@@ -6,23 +6,24 @@ const SignatureOrderSummary = ({ subtotal, discount, total, isCheckingOut, onChe
   const [isPressed, setIsPressed] = useState(false);
  const navigate = useNavigate();
 
-  const handleButtonClick = async () => {
-    // if (isCheckingOut) return;
-    
-    // Add pressed effect
-    setIsPressed(true);
-    
-    // Call the actual checkout function immediately
-    // onCheckout();
  
-    
-    window.location.href = "/signature-order-confirmation?orderId=TEST12345";
- 
-    // Reset pressed effect after a short delay
-    setTimeout(() => {
-      setIsPressed(false);
-    }, 200);
-  };
+   const handleButtonClick = async () => {
+  if (isCheckingOut) return;
+
+  setIsPressed(true);
+
+  try {
+    // ✅ THIS IS THE MAIN FIX
+    await onCheckout(); // 👈 ye hi cashfree modal trigger karega
+
+  } catch (error) {
+    console.error("Checkout error:", error);
+  }
+
+  setTimeout(() => {
+    setIsPressed(false);
+  }, 200);
+};
 
   return (
     <div className="sticky top-8">

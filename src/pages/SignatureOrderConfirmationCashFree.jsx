@@ -70,21 +70,19 @@ const SignatureOrderConfirmationCashfree = () => {
     try {
       console.log("Creating order in database...");
 
-      const orderPayload = {
-        // cashfreeOrderId: orderId,
-        // orderType: "normal",
-        // amount: amount || 1,
-        ...(storedOrderData || {}),
+     const orderPayload = {
+  orderId: orderId,
+  amount: storedOrderData?.amount || amount,
+  fullName: storedOrderData?.fullName,
+  email: storedOrderData?.email,
+  phoneNumber: storedOrderData?.phoneNumber,
+  profession: storedOrderData?.profession,
+  remarks: storedOrderData?.remarks,
+  additionalProducts: storedOrderData?.additionalProducts || [],
+};
 
-        orderId: orderId,
-        amount: amount,
-        fullName: storedOrderData?.fullName,
-        email: storedOrderData?.email,
-        phoneNumber: storedOrderData?.phoneNumber,
-        profession: storedOrderData?.profession,
-        remarks: storedOrderData?.remarks,
-        additionalProducts: storedOrderData?.additionalProducts,
-      };
+// Safety check — log before sending
+console.log("Sending order payload:", orderPayload);
 
       const orderResponse = await axios.post(
         `${BACKEND_URL}/api/lander4/create-order`,

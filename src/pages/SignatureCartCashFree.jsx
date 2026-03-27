@@ -276,8 +276,8 @@ const createOrderWithoutPayment = async () => {
       const abandonedCartRes = await axios.post(
         `${BACKEND_URL}/api/lander4/create-order-abd`,
         {
-          // amount: total,
-          amount: 1,
+          amount: total,
+          // amount: 1,
           fullName: consultationFormData?.name,
           email: consultationFormData?.email,
           phoneNumber: consultationFormData?.phoneNumber,
@@ -305,8 +305,8 @@ const createOrderWithoutPayment = async () => {
       localStorage.setItem(
         "orderData",
         JSON.stringify({
-          amount: 1,
-          // amount: total,
+          // amount: 1,
+          amount: total,
           fullName: consultationFormData?.name,
           email: consultationFormData?.email,
           phoneNumber: consultationFormData?.phoneNumber,
@@ -322,8 +322,8 @@ const createOrderWithoutPayment = async () => {
       const apiResponse = await axios.post(
         `${BACKEND_URL}/api/payment/create-session`,
         {
-          // amount: total,
-          amount: 1,
+          amount: total,
+          // amount: 1,
           fullName: consultationFormData?.name,
           email: consultationFormData?.email,
           phoneNumber: consultationFormData?.phoneNumber,
@@ -375,7 +375,7 @@ const createOrderWithoutPayment = async () => {
     try {
       const checkoutOptions = {
         paymentSessionId: paymentSessionId,
-        redirectTarget: "_self",
+        redirectTarget: "_modal",
         onSuccess: function (data) {
           console.log("Payment successful:", data);
           // Store order data for verification page
@@ -616,7 +616,7 @@ const createOrderWithoutPayment = async () => {
                         : "translate-y-8 opacity-0"
                     }`}
                   >
-                    {/* <SignatureOrderSummary
+                    <SignatureOrderSummary
                       subtotal={subtotal}
                       discount={discount}
                       total={total}
@@ -627,11 +627,11 @@ const createOrderWithoutPayment = async () => {
                       couponDiscountAmount={couponDiscountAmount}
                       isCheckingOut={isCheckingOut}
                       onCheckout={doPayment}
-                    /> */}
+                    />
                     
 {/* dummy order summary */}
 
-  <SignatureOrderSummary
+  {/* <SignatureOrderSummary
   subtotal={subtotal}
   discount={discount}
   total={total}
@@ -642,7 +642,7 @@ const createOrderWithoutPayment = async () => {
   couponDiscountAmount={couponDiscountAmount}
   isCheckingOut={isCheckingOut}
   onCheckout={createOrderWithoutPayment}
-/>
+/> */}
                   </div>
                 </div>
               </div>
@@ -712,7 +712,7 @@ const createOrderWithoutPayment = async () => {
                         : "translate-y-8 opacity-0"
                     }`}
                   >
-                    {/* <SignatureOrderSummary
+                    <SignatureOrderSummary
                       subtotal={subtotal}
                       discount={discount}
                       totalMrp={totalMrp}
@@ -723,8 +723,8 @@ const createOrderWithoutPayment = async () => {
                       couponDiscountAmount={couponDiscountAmount}
                       isCheckingOut={isCheckingOut}
                       onCheckout={doPayment}
-                    /> */}
-                    <SignatureOrderSummary
+                    />
+                    {/* <SignatureOrderSummary
   subtotal={subtotal}
   discount={discount}
   total={total}
@@ -735,7 +735,7 @@ const createOrderWithoutPayment = async () => {
   couponDiscountAmount={couponDiscountAmount}
   isCheckingOut={isCheckingOut}
   onCheckout={createOrderWithoutPayment}
-/>
+/> */}
                   </div>
                 </div>
               </div>
