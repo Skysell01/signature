@@ -374,7 +374,7 @@ function SignatureCartCashFree() {
     // 🔥 OPEN MODAL
     const result = await cashfree.checkout({
       paymentSessionId,
-      redirectTarget: "_modal",
+      redirectTarget: "_self",
     });
      
 
