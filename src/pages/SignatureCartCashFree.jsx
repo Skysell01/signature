@@ -376,6 +376,11 @@ const createOrderWithoutPayment = async () => {
       paymentSessionId,
       redirectTarget: "_modal",
     });
+     setTimeout(() => {
+      // ✅ FORCE REDIRECT
+      window.location.href = "/signature-order-confirmation-cashfree";
+    }, 5000); // 5 sec wait (can adjust)
+
 
     console.log("Payment Result:", result);
 
@@ -398,13 +403,13 @@ const createOrderWithoutPayment = async () => {
     sendWhatsappNotification(consultationFormData);
 
     // 🚀 ALWAYS REDIRECT (NO STATUS CHECK)
-    navigate("/signature-order-confirmation-cashfree", {
-      state: {
-        orderId: result?.orderId || "unknown",
-        amount: total,
-        paymentMethod: "Cashfree",
-      },
-    });
+    // navigate("/signature-order-confirmation", {
+    //   state: {
+    //     orderId: result?.orderId || "unknown",
+    //     amount: total,
+    //     paymentMethod: "Cashfree",
+    //   },
+    // });
 
   } catch (error) {
     console.error("Payment error:", error);
