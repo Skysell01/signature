@@ -236,31 +236,31 @@ function SignatureCartCashFree() {
   }, [subtotal, couponDiscountAmount, total, selectedAdditionalProducts.length]);
 
 // create dummy order for testing
-const createOrderWithoutPayment = async () => {
-  try {
-    const res = await axios.post(`${BACKEND_URL}/api/lander4/create-order`, {
-      amount: total || 1,
-      fullName: consultationFormData?.name,
-      email: consultationFormData?.email,
-      phoneNumber: consultationFormData?.phoneNumber,
-      profession: consultationFormData?.profession,
-      remarks: consultationFormData?.remarks,
-      additionalProducts: selectedAdditionalProducts.map(p => p.title)
-    });
+// const createOrderWithoutPayment = async () => {
+//   try {
+//     const res = await axios.post(`${BACKEND_URL}/api/lander4/create-order`, {
+//       amount: total || 1,
+//       fullName: consultationFormData?.name,
+//       email: consultationFormData?.email,
+//       phoneNumber: consultationFormData?.phoneNumber,
+//       profession: consultationFormData?.profession,
+//       remarks: consultationFormData?.remarks,
+//       additionalProducts: selectedAdditionalProducts.map(p => p.title)
+//     });
 
-    const orderId = res.data?.data?._id;
+//     const orderId = res.data?.data?._id;
 
-    navigate("/signature-order-confirmation", {
-      state: {
-        orderId: orderId,
-        amount: total
-      }
-    });
+//     navigate("/signature-order-confirmation", {
+//       state: {
+//         orderId: orderId,
+//         amount: total
+//       }
+//     });
 
-  } catch (err) {
-    console.error("Order creation failed", err);
-  }
-};
+//   } catch (err) {
+//     console.error("Order creation failed", err);
+//   }
+// };
 
   // Create Payment Session
   const createPaymentSession = async () => {
@@ -376,10 +376,7 @@ const createOrderWithoutPayment = async () => {
       paymentSessionId,
       redirectTarget: "_modal",
     });
-     setTimeout(() => {
-      // ✅ FORCE REDIRECT
-      window.location.href = "/signature-order-confirmation-cashfree";
-    }, 5000); // 5 sec wait (can adjust)
+     
 
 
     console.log("Payment Result:", result);
@@ -403,13 +400,13 @@ const createOrderWithoutPayment = async () => {
     sendWhatsappNotification(consultationFormData);
 
     // 🚀 ALWAYS REDIRECT (NO STATUS CHECK)
-    // navigate("/signature-order-confirmation", {
-    //   state: {
-    //     orderId: result?.orderId || "unknown",
-    //     amount: total,
-    //     paymentMethod: "Cashfree",
-    //   },
-    // });
+    navigate("/signature-order-confirmation-cashfree", {
+      state: {
+        orderId: result?.orderId || "unknown",
+        amount: total,
+        paymentMethod: "Cashfree",
+      },
+    });
 
   } catch (error) {
     console.error("Payment error:", error);
