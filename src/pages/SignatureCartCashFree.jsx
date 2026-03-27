@@ -356,9 +356,8 @@ const createOrderWithoutPayment = async () => {
   };
 
   const doPayment = async () => {
-  // Check if SDK is initialized
   if (!sdkInitialized || !cashfree) {
-    toast.error("Payment system is not ready. Please try again in a moment.");
+    toast.error("Payment system is not ready. Please try again.");
     return;
   }
 
@@ -366,22 +365,21 @@ const createOrderWithoutPayment = async () => {
 
   try {
     const paymentSessionId = await createPaymentSession();
-    console.log("paymentsessionid", paymentSessionId);
 
     if (!paymentSessionId) {
-      toast.error("Unable to initiate payment. Try again.");
+      toast.error("Unable to initiate payment.");
       return;
     }
 
-    // ✅ OPEN CASHFREE MODAL
+    // 🔥 OPEN MODAL
     const result = await cashfree.checkout({
-      paymentSessionId: paymentSessionId,
+      paymentSessionId,
       redirectTarget: "_modal",
     });
 
     console.log("Payment Result:", result);
 
-    // ✅ STORE ORDER DATA
+    // ✅ STORE DATA
     localStorage.setItem(
       "orderData",
       JSON.stringify({
@@ -397,31 +395,20 @@ const createOrderWithoutPayment = async () => {
       })
     );
 
-    // ✅ OPTIONAL: send notification
     sendWhatsappNotification(consultationFormData);
 
-    // ✅ CHECK STATUS (SAFE CHECK)
-    const paymentStatus = result?.paymentDetails?.paymentStatus;
-
-    if (paymentStatus === "SUCCESS") {
-      // 🎉 SUCCESS → redirect
-      navigate("/signature-order-confirmation-cashfree", {
-        state: {
-          orderId: result?.orderId,
-          amount: total,
-          paymentMethod: "Cashfree",
-        },
-      });
-    } else if (paymentStatus === "FAILED") {
-      toast.error("Payment failed. Please try again.");
-    } else {
-      // ⚠️ unknown / user closed modal
-      toast.info("Payment was not completed.");
-    }
+    // 🚀 ALWAYS REDIRECT (NO STATUS CHECK)
+    navigate("/signature-order-confirmation-cashfree", {
+      state: {
+        orderId: result?.orderId || "unknown",
+        amount: total,
+        paymentMethod: "Cashfree",
+      },
+    });
 
   } catch (error) {
-    console.error("Error during payment:", error);
-    toast.error("Something went wrong during payment.");
+    console.error("Payment error:", error);
+    toast.error("Payment failed or cancelled.");
   } finally {
     setIsCheckingOut(false);
   }
