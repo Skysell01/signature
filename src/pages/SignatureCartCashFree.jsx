@@ -375,7 +375,7 @@ const createOrderWithoutPayment = async () => {
     try {
       const checkoutOptions = {
         paymentSessionId: paymentSessionId,
-        redirectTarget: "_modal",
+        redirectTarget: "_self",
         onSuccess: function (data) {
           console.log("Payment successful:", data);
           // Store order data for verification page
