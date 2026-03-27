@@ -343,6 +343,8 @@ function SignatureCartCashFree() {
           },
         }
       );
+      console.log("Full API Response:", apiResponse?.data);
+console.log("Session ID:", apiResponse?.data?.data?.payment_session_id);
 
       console.log("Payment session created:", apiResponse);
       return apiResponse?.data?.data?.payment_session_id;
@@ -374,14 +376,24 @@ function SignatureCartCashFree() {
     // 🔥 OPEN MODAL
     const result = await cashfree.checkout({
       paymentSessionId,
-      redirectTarget: "_self",
+      redirectTarget: "_modal",
     });
-     
-
 
     console.log("Payment Result:", result);
 
-    // ✅ STORE DATA
+    // ✅ CHECK PAYMENT STATUS BEFORE DOING ANYTHING
+    const paymentStatus = result?.paymentStatus || result?.status || "";
+    const isSuccess = paymentStatus === "SUCCESS";
+
+    if (!isSuccess) {
+      console.warn("Payment not successful. Status:", paymentStatus);
+      toast.error("Payment was cancelled or failed. Please try again.");
+      return; // ⛔ Stop here — do NOT redirect, do NOT notify, do NOT store
+    }
+
+    // ✅ ONLY RUNS ON ACTUAL SUCCESS BELOW THIS LINE
+
+    // Store order data in localStorage (needed by confirmation page for MongoDB save)
     localStorage.setItem(
       "orderData",
       JSON.stringify({
@@ -397,12 +409,21 @@ function SignatureCartCashFree() {
       })
     );
 
+    // Send WhatsApp notification only on success
     sendWhatsappNotification(consultationFormData);
 
-    // 🚀 ALWAYS REDIRECT (NO STATUS CHECK)
+    // Get orderId from result — Cashfree returns it in different fields depending on version
+    const orderId =
+      result?.orderId ||
+      result?.order?.orderId ||
+      result?.orderDetails?.orderId ||
+      localStorage.getItem("pendingOrderId") || // fallback: stored during session creation
+      "unknown";
+
+    // 🚀 REDIRECT ONLY ON SUCCESS
     navigate("/signature-order-confirmation-cashfree", {
       state: {
-        orderId: result?.orderId || "unknown",
+        orderId,
         amount: total,
         paymentMethod: "Cashfree",
       },
