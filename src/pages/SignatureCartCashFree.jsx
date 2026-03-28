@@ -378,8 +378,8 @@ console.log("Session ID:", apiResponse?.data?.data?.payment_session_id);
       paymentSessionId,
       redirectTarget: "_modal",
     });
+console.log("RAW Payment Result:", JSON.stringify(result));
 
-    console.log("Payment Result:", result);
 
     // ✅ CHECK PAYMENT STATUS BEFORE DOING ANYTHING
     const paymentStatus = result?.paymentStatus || result?.status || "";

@@ -57,7 +57,7 @@ const SignatureOrderConfirmationCashfree = () => {
       setOrderStatus("failed");
       setErrorMessage("Invalid order. Please try again.");
       toast.error("No order ID found. Redirecting to cart.");
-      setTimeout(() => navigate("/signature-cart"), 2000);
+      setTimeout(() => navigate("/signature-cart-cashfree"), 2000);
       return;
     }
 
@@ -209,7 +209,7 @@ console.log("Sending order payload:", orderPayload);
                 )}
               </button>
               <button
-                onClick={() => navigate("/signature-cart")}
+                onClick={() => navigate("/signature-cart-cashfree")}
                 className="w-full bg-gray-600 text-white px-6 py-3 rounded-lg font-semibold hover:bg-gray-700 transition"
               >
                 Back to Cart
