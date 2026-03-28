@@ -346,8 +346,22 @@ function SignatureCartCashFree() {
       console.log("Full API Response:", apiResponse?.data);
 console.log("Session ID:", apiResponse?.data?.data?.payment_session_id);
 
+      // console.log("Payment session created:", apiResponse);
+      // return apiResponse?.data?.data?.payment_session_id;
       console.log("Payment session created:", apiResponse);
-      return apiResponse?.data?.data?.payment_session_id;
+
+// ✅ Store the order_id for payment verification after modal closes
+const sessionId = apiResponse?.data?.data?.payment_session_id;
+const backendOrderId = apiResponse?.data?.data?.order_id;
+
+if (backendOrderId) {
+  localStorage.setItem("pendingOrderId", backendOrderId);
+  console.log("Stored pendingOrderId:", backendOrderId);
+} else {
+  console.warn("No order_id in response:", apiResponse?.data);
+}
+
+return sessionId;
     } catch (error) {
       console.error("Error creating payment session:", error);
       toast.error("Failed to create payment session. Please try again.");
@@ -357,7 +371,86 @@ console.log("Session ID:", apiResponse?.data?.data?.payment_session_id);
     }
   };
 
-  const doPayment = async () => {
+//   const doPayment = async () => {
+//   if (!sdkInitialized || !cashfree) {
+//     toast.error("Payment system is not ready. Please try again.");
+//     return;
+//   }
+
+//   setIsCheckingOut(true);
+
+//   try {
+//     const paymentSessionId = await createPaymentSession();
+
+//     if (!paymentSessionId) {
+//       toast.error("Unable to initiate payment.");
+//       return;
+//     }
+
+//     // 🔥 OPEN MODAL
+//     const result = await cashfree.checkout({
+//       paymentSessionId,
+//       redirectTarget: "_modal",
+//     });
+// console.log("RAW Payment Result:", JSON.stringify(result));
+
+
+//     // ✅ CHECK PAYMENT STATUS BEFORE DOING ANYTHING
+//     const paymentStatus = result?.paymentStatus || result?.status || "";
+//     const isSuccess = paymentStatus === "SUCCESS";
+
+//     if (!isSuccess) {
+//       console.warn("Payment not successful. Status:", paymentStatus);
+//       toast.error("Payment was cancelled or failed. Please try again.");
+//       return; // ⛔ Stop here — do NOT redirect, do NOT notify, do NOT store
+//     }
+
+//     // ✅ ONLY RUNS ON ACTUAL SUCCESS BELOW THIS LINE
+
+//     // Store order data in localStorage (needed by confirmation page for MongoDB save)
+//     localStorage.setItem(
+//       "orderData",
+//       JSON.stringify({
+//         amount: total,
+//         fullName: consultationFormData?.name,
+//         email: consultationFormData?.email,
+//         phoneNumber: consultationFormData?.phoneNumber,
+//         profession: consultationFormData?.profession,
+//         remarks: consultationFormData?.remarks,
+//         additionalProducts: selectedAdditionalProducts.map(
+//           (product) => product.title
+//         ),
+//       })
+//     );
+
+//     // Send WhatsApp notification only on success
+//     sendWhatsappNotification(consultationFormData);
+
+//     // Get orderId from result — Cashfree returns it in different fields depending on version
+//     const orderId =
+//       result?.orderId ||
+//       result?.order?.orderId ||
+//       result?.orderDetails?.orderId ||
+//       localStorage.getItem("pendingOrderId") || // fallback: stored during session creation
+//       "unknown";
+
+//     // 🚀 REDIRECT ONLY ON SUCCESS
+//     navigate("/signature-order-confirmation-cashfree", {
+//       state: {
+//         orderId,
+//         amount: total,
+//         paymentMethod: "Cashfree",
+//       },
+//     });
+
+//   } catch (error) {
+//     console.error("Payment error:", error);
+//     toast.error("Payment failed or cancelled.");
+//   } finally {
+//     setIsCheckingOut(false);
+//   }
+// };
+const doPayment = async () => {
   if (!sdkInitialized || !cashfree) {
     toast.error("Payment system is not ready. Please try again.");
     return;
@@ -378,17 +471,38 @@ console.log("Session ID:", apiResponse?.data?.data?.payment_session_id);
       paymentSessionId,
       redirectTarget: "_modal",
     });
-console.log("RAW Payment Result:", JSON.stringify(result));
 
+    console.log("RAW Payment Result:", JSON.stringify(result));
 
-    // ✅ CHECK PAYMENT STATUS BEFORE DOING ANYTHING
-    const paymentStatus = result?.paymentStatus || result?.status || "";
-    const isSuccess = paymentStatus === "SUCCESS";
+    // ✅ Cashfree modal does NOT return paymentStatus in result
+    // We must verify payment status from backend using the pendingOrderId
+    const pendingOrderId = localStorage.getItem("pendingOrderId");
+
+    if (!pendingOrderId) {
+      toast.error("Order ID missing. Please contact support.");
+      return;
+    }
+
+    // 🔍 Verify payment status from backend
+    toast.info("Verifying payment...");
+    
+    const verifyResponse = await axios.get(
+      `${BACKEND_URL}/api/payment/verify/${pendingOrderId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+      }
+    );
+
+    console.log("Verify response:", verifyResponse.data);
+
+    const isSuccess = verifyResponse.data?.success === true;
 
     if (!isSuccess) {
-      console.warn("Payment not successful. Status:", paymentStatus);
+      console.warn("Payment not successful after verification");
       toast.error("Payment was cancelled or failed. Please try again.");
-      return; // ⛔ Stop here — do NOT redirect, do NOT notify, do NOT store
+      return;
     }
 
     // ✅ ONLY RUNS ON ACTUAL SUCCESS BELOW THIS LINE
@@ -412,18 +526,10 @@ console.log("RAW Payment Result:", JSON.stringify(result));
     // Send WhatsApp notification only on success
     sendWhatsappNotification(consultationFormData);
 
-    // Get orderId from result — Cashfree returns it in different fields depending on version
-    const orderId =
-      result?.orderId ||
-      result?.order?.orderId ||
-      result?.orderDetails?.orderId ||
-      localStorage.getItem("pendingOrderId") || // fallback: stored during session creation
-      "unknown";
-
     // 🚀 REDIRECT ONLY ON SUCCESS
     navigate("/signature-order-confirmation-cashfree", {
       state: {
-        orderId,
+        orderId: pendingOrderId,
         amount: total,
         paymentMethod: "Cashfree",
       },
