@@ -469,7 +469,7 @@ const createPaymentSession = async () => {
       setCreatingSession(false); // ✅ THIS WAS MISSING TOO
     }
   };
-  const doPayment = async () => {
+ const doPayment = async () => {
   if (!sdkInitialized || !cashfree) {
     toast.error("Payment system is not ready. Please try again.");
     return;
@@ -490,22 +490,42 @@ const createPaymentSession = async () => {
       paymentSessionId,
       redirectTarget: "_modal",
     });
-console.log("RAW Payment Result:", JSON.stringify(result));
 
+    console.log("RAW Payment Result:", JSON.stringify(result));
 
-    // ✅ CHECK PAYMENT STATUS BEFORE DOING ANYTHING
-    const paymentStatus = result?.paymentStatus || result?.status || "";
-    const isSuccess = paymentStatus === "SUCCESS";
+    // ✅ Cashfree modal does NOT return paymentStatus
+    // Verify payment status from backend using pendingOrderId
+    const pendingOrderId = localStorage.getItem("pendingOrderId");
+
+    if (!pendingOrderId) {
+      toast.error("Order ID missing. Please contact support.");
+      return;
+    }
+
+    // 🔍 Verify payment status from backend
+    toast.info("Verifying payment...");
+
+    const verifyResponse = await axios.get(
+      `${BACKEND_URL}/api/payment/verify/${pendingOrderId}`,
+      {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
+        },
+      }
+    );
+
+    console.log("Verify response:", verifyResponse.data);
+
+    const isSuccess = verifyResponse.data?.success === true;
 
     if (!isSuccess) {
-      console.warn("Payment not successful. Status:", paymentStatus);
+      console.warn("Payment not successful after verification");
       toast.error("Payment was cancelled or failed. Please try again.");
-      return; // ⛔ Stop here — do NOT redirect, do NOT notify, do NOT store
+      return;
     }
 
     // ✅ ONLY RUNS ON ACTUAL SUCCESS BELOW THIS LINE
 
-    // Store order data in localStorage (needed by confirmation page for MongoDB save)
     localStorage.setItem(
       "orderData",
       JSON.stringify({
@@ -521,21 +541,12 @@ console.log("RAW Payment Result:", JSON.stringify(result));
       })
     );
 
-    // Send WhatsApp notification only on success
     sendWhatsappNotification(consultationFormData);
-
-    // Get orderId from result — Cashfree returns it in different fields depending on version
-    const orderId =
-      result?.orderId ||
-      result?.order?.orderId ||
-      result?.orderDetails?.orderId ||
-      localStorage.getItem("pendingOrderId") || // fallback: stored during session creation
-      "unknown";
 
     // 🚀 REDIRECT ONLY ON SUCCESS
     navigate("/signature-order-confirmation-cashfree", {
       state: {
-        orderId,
+        orderId: pendingOrderId,
         amount: total,
         paymentMethod: "Cashfree",
       },
