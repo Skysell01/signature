@@ -67,7 +67,7 @@ function SignatureCartCashFree() {
   // Additional products data
   const additionalProducts = [
     {
-      id: 2,
+      id: 3,
       title: "✍️ Want to master your new signature perfectly?",
       description:
         "Add a printable sheet with your signature traced & outlined — just like handwriting practice sheets.",
@@ -559,98 +559,7 @@ const createPaymentSession = async () => {
     setIsCheckingOut(false);
   }
 };
-// const doPayment = async () => {
-//   if (!sdkInitialized || !cashfree) {
-//     toast.error("Payment system is not ready. Please try again.");
-//     return;
-//   }
 
-//   setIsCheckingOut(true);
-
-//   try {
-//     const paymentSessionId = await createPaymentSession();
-
-//     if (!paymentSessionId) {
-//       toast.error("Unable to initiate payment.");
-//       return;
-//     }
-
-//     // 🔥 OPEN MODAL
-//     const result = await cashfree.checkout({
-//       paymentSessionId,
-//       redirectTarget: "_modal",
-//     });
-
-//     console.log("RAW Payment Result:", JSON.stringify(result));
-
-//     // ✅ Cashfree modal does NOT return paymentStatus in result
-//     // We must verify payment status from backend using the pendingOrderId
-//     const pendingOrderId = localStorage.getItem("pendingOrderId");
-
-//     if (!pendingOrderId) {
-//       toast.error("Order ID missing. Please contact support.");
-//       return;
-//     }
-
-//     // 🔍 Verify payment status from backend
-//     toast.info("Verifying payment...");
-    
-//     const verifyResponse = await axios.get(
-//       `${BACKEND_URL}/api/payment/verify/${pendingOrderId}`,
-//       {
-//         headers: {
-//           Authorization: `Bearer ${localStorage.getItem("auth_token")}`,
-//         },
-//       }
-//     );
-
-//     console.log("Verify response:", verifyResponse.data);
-
-//     const isSuccess = verifyResponse.data?.success === true;
-
-//     if (!isSuccess) {
-//       console.warn("Payment not successful after verification");
-//       toast.error("Payment was cancelled or failed. Please try again.");
-//       return;
-//     }
-
-//     // ✅ ONLY RUNS ON ACTUAL SUCCESS BELOW THIS LINE
-
-//     // Store order data in localStorage (needed by confirmation page for MongoDB save)
-//     localStorage.setItem(
-//       "orderData",
-//       JSON.stringify({
-//         amount: total,
-//         fullName: consultationFormData?.name,
-//         email: consultationFormData?.email,
-//         phoneNumber: consultationFormData?.phoneNumber,
-//         profession: consultationFormData?.profession,
-//         remarks: consultationFormData?.remarks,
-//         additionalProducts: selectedAdditionalProducts.map(
-//           (product) => product.title
-//         ),
-//       })
-//     );
-
-//     // Send WhatsApp notification only on success
-//     sendWhatsappNotification(consultationFormData);
-
-//     // 🚀 REDIRECT ONLY ON SUCCESS
-//     navigate("/signature-order-confirmation-cashfree", {
-//       state: {
-//         orderId: pendingOrderId,
-//         amount: total,
-//         paymentMethod: "Cashfree",
-//       },
-//     });
-
-//   } catch (error) {
-//     console.error("Payment error:", error);
-//     toast.error("Payment failed or cancelled.");
-//   } finally {
-//     setIsCheckingOut(false);
-//   }
-// };
   async function sendWhatsappNotification(consultationFormData) {
     try {
       const response = await fetch(

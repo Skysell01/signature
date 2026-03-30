@@ -12,6 +12,7 @@ import LoveOrderConfirmation from "./pages/LoveOrderConfirmation";
 import Signature from "./pages/Signature";
 import SignatureCart from "./pages/SignatureCart";
 import SignatureRecord from "./pages/SignatureRecord";
+import SignatureRecord2 from "./pages/signature-record2";
 import SignatureOrderConfirmation from "./pages/SignatureOrderConfirmation";
 import Privacy from "./pages/Privacy";
 import Contact from "./pages/Contact";
@@ -31,6 +32,7 @@ import SignatureNewCart from "./components/signature-new-cart/SignatureNewCart";
 import SignatureNew from "./pages/new/SignatureNew";
 import NewCart from "./pages/new/NewCart";
 import SignatureCartCashFree from "./pages/SignatureCartCashFree";
+import SignatureCartCashfreeSupabase from "./pages/SignatureCartCashfreeSupabase";
 import SignatureOrderConfirmationCashfree from "./pages/SignatureOrderConfirmationCashFree";
 import SignatureNewAbondentReport from "./pages/new/SignatureNewAbondentReport";
 import SignatureTryAbondentReport from "./components/signature-try/SignTryAbd";
@@ -71,6 +73,8 @@ function App() {
       <Route path="/order-confirmation-five" element={<OrderConfirmation5 />} />
       <Route path="/signature4-abondent-record" element={<AbondentRecord5 />} />
       <Route path="/signature4-record" element={<Record5 />} />
+    
+
           {/* <Route path="/signature4" element={<Signature4 />} />
           
           */}
@@ -105,6 +109,9 @@ function App() {
             <Route path="/signature-new-v2" element={<SignatureNewRedesignedV2/>} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
+          <Route path="/signature-record2" element={<SignatureRecord2/>}/>
+        
+
 
           {/* Old routes */}
           {/* <Route path="/signature-cart" element={<SignatureCart />} /> */}
