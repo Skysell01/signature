@@ -34,7 +34,7 @@ function SignatureCartCashFree() {
       name: "✍ Professional Signature Design",
       description:
         "Personalized professional signature design based on your name and personality",
-      price: 3,
+      price: 489,
       originalPrice: 4999,
       duration: "24-48 hours",
       features: [
