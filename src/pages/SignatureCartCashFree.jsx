@@ -34,7 +34,7 @@ function SignatureCartCashFree() {
       name: "✍ Professional Signature Design",
       description:
         "Personalized professional signature design based on your name and personality",
-      price: 2,
+      price: 3,
       originalPrice: 4999,
       duration: "24-48 hours",
       features: [
@@ -67,7 +67,7 @@ function SignatureCartCashFree() {
   // Additional products data
   const additionalProducts = [
     {
-      id: 3,
+      id: 2,
       title: "✍️ Want to master your new signature perfectly?",
       description:
         "Add a printable sheet with your signature traced & outlined — just like handwriting practice sheets.",
