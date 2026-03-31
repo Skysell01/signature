@@ -1,8 +1,10 @@
 // supabase/functions/create-session/index.ts
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type",
 };
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -27,6 +29,8 @@ serve(async (req) => {
       url,
     } = body;
 
+    console.log("URL RECEIVED:", url); // 🔍 Debug
+
     // 🔐 ENV
     const CASHFREE_APP_ID = Deno.env.get("CASHFREE_APP_ID");
     const CASHFREE_SECRET = Deno.env.get("CASHFREE_SECRET");
@@ -37,6 +41,12 @@ serve(async (req) => {
 
     // 🆔 Unique order id
     const order_id = "order_" + Date.now();
+
+    // ✅ SAFE RETURN URL (VERY IMPORTANT FIX)
+    const safeUrl =
+      url && url.startsWith("https")
+        ? url
+        : "https://designsignature.in/signature-order-confirmation-cashfree";
 
     // 💳 Create Cashfree order
     const cfRes = await fetch("https://api.cashfree.com/pg/orders", {
@@ -49,7 +59,7 @@ serve(async (req) => {
       },
       body: JSON.stringify({
         order_id,
-        order_amount: amount,
+        order_amount: Number(amount), // 🔥 FIX: ensure number
         order_currency: "INR",
         customer_details: {
           customer_id: phoneNumber || "guest_" + Date.now(),
@@ -58,17 +68,18 @@ serve(async (req) => {
           customer_phone: phoneNumber || "9999999999",
         },
         order_meta: {
-          return_url: `${url}?order_id=${order_id}`,
+          return_url: `${safeUrl}?order_id=${order_id}`,
         },
       }),
     });
 
     const cfData = await cfRes.json();
+    console.log("Cashfree response:", cfData); // 🔍 Debug
 
     if (!cfData.payment_session_id) {
       return new Response(
         JSON.stringify({ success: false, error: cfData }),
-        { status: 400 , headers: corsHeaders}
+        { status: 400, headers: corsHeaders }
       );
     }
 
@@ -97,13 +108,15 @@ serve(async (req) => {
           order_id,
         },
       }),
-      {  headers: corsHeaders,status: 200 }
+      { status: 200, headers: corsHeaders }
     );
+
   } catch (err) {
     console.error("create-session error:", err);
+
     return new Response(
       JSON.stringify({ success: false, error: err.message }),
-      {  headers: corsHeaders,status: 500 }
+      { status: 500, headers: corsHeaders }
     );
   }
 });
