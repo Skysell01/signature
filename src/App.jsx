@@ -12,7 +12,7 @@ import LoveOrderConfirmation from "./pages/LoveOrderConfirmation";
 import Signature from "./pages/Signature";
 import SignatureCart from "./pages/SignatureCart";
 import SignatureRecord from "./pages/SignatureRecord";
-import SignatureRecord2 from "./pages/signature-record2";
+import SignatureRecord2 from "./pages/SignatureRecordSupabase";
 import SignatureOrderConfirmation from "./pages/SignatureOrderConfirmation";
 import Privacy from "./pages/Privacy";
 import Contact from "./pages/Contact";
@@ -59,6 +59,7 @@ import SignatureModern from "./pages/SignatureModern";
 import SignatureStudio from "./pages/SignatureStudio";
 import SigguLander from "./pages/SigguLander";
 import LogsPage from "./pages/log";
+import SignatureRecordSupabase from "./pages/SignatureRecordSupabase";
 
 
 
@@ -109,7 +110,8 @@ function App() {
             <Route path="/signature-new-v2" element={<SignatureNewRedesignedV2/>} />
           <Route path="/contact" element={<Contact />} />
           <Route path="/about" element={<About />} />
-          <Route path="/signature-record2" element={<SignatureRecord2/>}/>
+          <Route path="/signature-record-supabase" element={<SignatureRecordSupabase />} />
+          
         
 
 
