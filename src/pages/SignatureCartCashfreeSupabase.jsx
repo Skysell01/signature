@@ -185,7 +185,7 @@ function SignatureCartCashfreeSupabase() {
       // STEP 1: CREATE SESSION
       const sessionRes = await callEdgeFunction("create-session", {
         ...orderPayload(),
-        url: `${window.location.origin}/signature-order-confirmation-cashfree`,
+         url: `${window.location.origin}/signature-order-confirmation-cashfree`,
       });
 
       setCreatingSession(false);
