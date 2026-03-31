@@ -4,11 +4,8 @@ import React, { useState, useEffect } from "react";
 import {
   FileText,
   Users,
-  CalendarIcon,
   Search,
-  CheckCircle,
   Download,
-  ChevronDown,
 } from "lucide-react";
 import SignatureNavbar from "../components/signature/SignatureNavbar";
 import { supabase } from "../utils/supabaseClient";
@@ -19,9 +16,6 @@ const SignatureRecordSupabase = () => {
   const [error, setError] = useState(null);
 
   const [searchTerm, setSearchTerm] = useState("");
-  const [dateFilter, setDateFilter] = useState("all");
-  const [customStartDate, setCustomStartDate] = useState("");
-  const [customEndDate, setCustomEndDate] = useState("");
 
   useEffect(() => {
     fetchOrders();
@@ -69,7 +63,15 @@ const SignatureRecordSupabase = () => {
   );
 
   const exportToCSV = () => {
-    const headers = ["Order ID", "Name", "Email", "Phone", "Amount", "Status", "Date"];
+    const headers = [
+      "Order ID",
+      "Name",
+      "Email",
+      "Phone",
+      "Amount",
+      "Status",
+      "Date",
+    ];
 
     const rows = filteredOrders.map((o) => [
       o.orderId,
@@ -90,46 +92,62 @@ const SignatureRecordSupabase = () => {
     link.click();
   };
 
-  if (loading)
-    return <div className="p-10 text-center text-black">Loading orders...</div>;
+  // Loading
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 text-black">
+        <SignatureNavbar />
+        <div className="p-10 text-center">Loading orders...</div>
+      </div>
+    );
+  }
 
-  if (error)
-    return <div className="p-10 text-center text-black">{error}</div>;
+  // Error
+  if (error) {
+    return (
+      <div className="min-h-screen bg-gray-50 text-black">
+        <SignatureNavbar />
+        <div className="p-10 text-center text-red-500">{error}</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gray-50 text-black">
       <SignatureNavbar />
 
-      <div className="max-w-7xl mx-auto p-6 text-black">
+      <div className="max-w-7xl mx-auto p-6">
 
         {/* HEADER */}
         <h1 className="text-3xl font-bold mb-6 text-center text-black">
           Orders Dashboard
         </h1>
 
-        {/* SEARCH */}
+        {/* SEARCH + EXPORT */}
         <div className="flex flex-wrap gap-4 mb-6 justify-between">
 
           <input
             type="text"
             placeholder="Search..."
-            className="border p-2 rounded w-64 text-black placeholder-black"
+            className="border p-2 rounded w-64 text-black placeholder-gray-500 bg-white"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
           <button
             onClick={exportToCSV}
-            className="bg-black text-black px-4 py-2 rounded border"
+            className="bg-black text-white px-4 py-2 rounded"
           >
             Export CSV
           </button>
         </div>
 
         {/* TABLE */}
-        <div className="bg-white rounded shadow overflow-auto text-black">
-          <table className="w-full text-sm text-black">
-            <thead className="bg-white text-black border-b">
+        <div className="bg-white rounded shadow overflow-auto">
+          <table className="w-full text-sm">
+            
+            {/* HEADER */}
+            <thead className="bg-black text-white">
               <tr>
                 <th className="p-3">Order ID</th>
                 <th>Name</th>
@@ -141,17 +159,30 @@ const SignatureRecordSupabase = () => {
               </tr>
             </thead>
 
-            <tbody>
-              {filteredOrders.map((o) => (
-                <tr key={o.orderId} className="border-b text-center text-black">
+            {/* BODY */}
+            <tbody className="text-black">
+              {filteredOrders.map((o, index) => (
+                <tr
+                  key={o.orderId}
+                  className={`border-b text-center ${
+                    index % 2 === 0 ? "bg-white" : "bg-gray-50"
+                  }`}
+                >
                   <td className="p-3">{o.orderId}</td>
                   <td>{o.fullName}</td>
                   <td>{o.email}</td>
                   <td>{o.phoneNumber}</td>
                   <td>₹{o.amount}</td>
 
+                  {/* STATUS */}
                   <td>
-                    <span className="px-2 py-1 rounded text-xs text-black border">
+                    <span
+                      className={`px-2 py-1 rounded text-xs ${
+                        o.status === "PAID"
+                          ? "bg-green-200 text-green-800"
+                          : "bg-yellow-200 text-yellow-800"
+                      }`}
+                    >
                       {o.status}
                     </span>
                   </td>
@@ -163,8 +194,16 @@ const SignatureRecordSupabase = () => {
           </table>
         </div>
 
+        {/* EMPTY STATE */}
+        {filteredOrders.length === 0 && (
+          <div className="text-center py-10 text-gray-600">
+            No orders found
+          </div>
+        )}
+
         {/* STATS */}
-        <div className="grid grid-cols-3 gap-4 mt-6 text-black">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+
           <div className="bg-white p-4 shadow rounded text-center text-black">
             <p className="text-xl font-bold">{filteredOrders.length}</p>
             <p>Total Orders</p>
@@ -183,6 +222,7 @@ const SignatureRecordSupabase = () => {
             </p>
             <p>Customers</p>
           </div>
+
         </div>
       </div>
     </div>
