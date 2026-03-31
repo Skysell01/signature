@@ -22,8 +22,6 @@ const SignatureRecordSupabase = () => {
   const [dateFilter, setDateFilter] = useState("all");
   const [customStartDate, setCustomStartDate] = useState("");
   const [customEndDate, setCustomEndDate] = useState("");
-  const [showDateDropdown, setShowDateDropdown] = useState(false);
-  const [showCustomDatePicker, setShowCustomDatePicker] = useState(false);
 
   useEffect(() => {
     fetchOrders();
@@ -63,59 +61,15 @@ const SignatureRecordSupabase = () => {
 
   const formatDateTime = (date) => new Date(date).toLocaleString();
 
-  // 🔍 Filters
-  const getFilteredOrders = () => {
-    let filtered = [...orders];
+  const filteredOrders = orders.filter(
+    (o) =>
+      o.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      o.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      o.orderId?.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
-    if (searchTerm) {
-      filtered = filtered.filter(
-        (o) =>
-          o.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          o.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          o.orderId?.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
-
-    if (dateFilter !== "all") {
-      const now = new Date();
-      const today = new Date(now.setHours(0, 0, 0, 0));
-
-      filtered = filtered.filter((o) => {
-        const d = new Date(o.orderDate);
-
-        if (dateFilter === "today") return d >= today;
-
-        if (dateFilter === "last7days") {
-          const last7 = new Date();
-          last7.setDate(last7.getDate() - 7);
-          return d >= last7;
-        }
-
-        if (dateFilter === "custom") {
-          if (!customStartDate || !customEndDate) return true;
-          return d >= new Date(customStartDate) && d <= new Date(customEndDate);
-        }
-
-        return true;
-      });
-    }
-
-    return filtered;
-  };
-
-  const filteredOrders = getFilteredOrders();
-
-  // 📄 CSV Export
   const exportToCSV = () => {
-    const headers = [
-      "Order ID",
-      "Name",
-      "Email",
-      "Phone",
-      "Amount",
-      "Status",
-      "Date",
-    ];
+    const headers = ["Order ID", "Name", "Email", "Phone", "Amount", "Status", "Date"];
 
     const rows = filteredOrders.map((o) => [
       o.orderId,
@@ -136,46 +90,46 @@ const SignatureRecordSupabase = () => {
     link.click();
   };
 
-  // UI States
   if (loading)
-    return <div className="p-10 text-center">Loading orders...</div>;
+    return <div className="p-10 text-center text-black">Loading orders...</div>;
+
   if (error)
-    return <div className="p-10 text-red-500 text-center">{error}</div>;
+    return <div className="p-10 text-center text-black">{error}</div>;
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gray-50 text-black">
       <SignatureNavbar />
 
-      <div className="max-w-7xl mx-auto p-6">
+      <div className="max-w-7xl mx-auto p-6 text-black">
 
         {/* HEADER */}
-        <h1 className="text-3xl font-bold mb-6 text-center">
+        <h1 className="text-3xl font-bold mb-6 text-center text-black">
           Orders Dashboard
         </h1>
 
-        {/* SEARCH + FILTER */}
+        {/* SEARCH */}
         <div className="flex flex-wrap gap-4 mb-6 justify-between">
 
           <input
             type="text"
             placeholder="Search..."
-            className="border p-2 rounded w-64"
+            className="border p-2 rounded w-64 text-black placeholder-black"
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
 
           <button
             onClick={exportToCSV}
-            className="bg-black text-white px-4 py-2 rounded"
+            className="bg-black text-black px-4 py-2 rounded border"
           >
             Export CSV
           </button>
         </div>
 
         {/* TABLE */}
-        <div className="bg-white rounded shadow overflow-auto">
-          <table className="w-full text-sm">
-            <thead className="bg-black text-white">
+        <div className="bg-white rounded shadow overflow-auto text-black">
+          <table className="w-full text-sm text-black">
+            <thead className="bg-white text-black border-b">
               <tr>
                 <th className="p-3">Order ID</th>
                 <th>Name</th>
@@ -189,7 +143,7 @@ const SignatureRecordSupabase = () => {
 
             <tbody>
               {filteredOrders.map((o) => (
-                <tr key={o.orderId} className="border-b text-center">
+                <tr key={o.orderId} className="border-b text-center text-black">
                   <td className="p-3">{o.orderId}</td>
                   <td>{o.fullName}</td>
                   <td>{o.email}</td>
@@ -197,13 +151,7 @@ const SignatureRecordSupabase = () => {
                   <td>₹{o.amount}</td>
 
                   <td>
-                    <span
-                      className={`px-2 py-1 rounded text-xs ${
-                        o.status === "PAID"
-                          ? "bg-green-200 text-green-800"
-                          : "bg-yellow-200 text-yellow-800"
-                      }`}
-                    >
+                    <span className="px-2 py-1 rounded text-xs text-black border">
                       {o.status}
                     </span>
                   </td>
@@ -216,20 +164,20 @@ const SignatureRecordSupabase = () => {
         </div>
 
         {/* STATS */}
-        <div className="grid grid-cols-3 gap-4 mt-6">
-          <div className="bg-white p-4 shadow rounded text-center">
+        <div className="grid grid-cols-3 gap-4 mt-6 text-black">
+          <div className="bg-white p-4 shadow rounded text-center text-black">
             <p className="text-xl font-bold">{filteredOrders.length}</p>
             <p>Total Orders</p>
           </div>
 
-          <div className="bg-white p-4 shadow rounded text-center">
+          <div className="bg-white p-4 shadow rounded text-center text-black">
             <p className="text-xl font-bold">
               ₹{filteredOrders.reduce((a, b) => a + b.amount, 0)}
             </p>
             <p>Revenue</p>
           </div>
 
-          <div className="bg-white p-4 shadow rounded text-center">
+          <div className="bg-white p-4 shadow rounded text-center text-black">
             <p className="text-xl font-bold">
               {new Set(filteredOrders.map((o) => o.email)).size}
             </p>
