@@ -1,9 +1,10 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
+// supabase/functions/create-session/index.ts
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, apikey, content-type",
 };
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -11,6 +12,8 @@ serve(async (req) => {
   }
 
   try {
+    const body = await req.json();
+
     const {
       amount,
       fullName,
@@ -19,74 +22,88 @@ serve(async (req) => {
       profession,
       remarks,
       additionalProducts,
+      couponCode,
+      couponDiscount,
       url,
-    } = await req.json();
+    } = body;
 
-    // Validate required fields
-    if (!amount || !fullName || !email || !phoneNumber) {
-      return new Response(
-        JSON.stringify({ success: false, error: "Missing required fields" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
-    }
+    // 🔐 ENV
+    const CASHFREE_APP_ID = Deno.env.get("CASHFREE_APP_ID");
+    const CASHFREE_SECRET = Deno.env.get("CASHFREE_SECRET");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
-    const orderId = `order_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE!);
 
-    const cashfreeResponse = await fetch(
-      "https://api.cashfree.com/pg/orders",
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-version": "2023-08-01",
-          "x-client-id": Deno.env.get("CASHFREE_APP_ID")!,
-          "x-client-secret": Deno.env.get("CASHFREE_SECRET_KEY")!,
+    // 🆔 Unique order id
+    const order_id = "order_" + Date.now();
+
+    // 💳 Create Cashfree order
+    const cfRes = await fetch("https://api.cashfree.com/pg/orders", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-client-id": CASHFREE_APP_ID!,
+        "x-client-secret": CASHFREE_SECRET!,
+        "x-api-version": "2022-09-01",
+      },
+      body: JSON.stringify({
+        order_id,
+        order_amount: amount,
+        order_currency: "INR",
+        customer_details: {
+          customer_id: phoneNumber || "guest_" + Date.now(),
+          customer_name: fullName || "Guest",
+          customer_email: email || "test@test.com",
+          customer_phone: phoneNumber || "9999999999",
         },
-        body: JSON.stringify({
-          order_id: orderId,
-          order_amount: amount,
-          order_currency: "INR",
-          customer_details: {
-            customer_id: `cust_${Date.now()}`,
-            customer_name: fullName,
-            customer_email: email,
-            customer_phone: phoneNumber,
-          },
-          order_meta: {
-            return_url: url,
-            notify_url: url,
-          },
-          order_note: `${profession || ''} - ${remarks || ''}`,
-        }),
-      }
-    );
+        order_meta: {
+          return_url: `${url}?order_id=${order_id}`,
+        },
+      }),
+    });
 
-    const cashfreeData = await cashfreeResponse.json();
-    console.log("Cashfree create order response:", JSON.stringify(cashfreeData));
+    const cfData = await cfRes.json();
 
-    if (!cashfreeResponse.ok) {
+    if (!cfData.payment_session_id) {
       return new Response(
-        JSON.stringify({ success: false, error: cashfreeData }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+        JSON.stringify({ success: false, error: cfData }),
+        { status: 400 , headers: corsHeaders}
       );
     }
+
+    // 🧾 Insert PENDING row
+    await supabase.from("orders").insert([
+      {
+        order_id,
+        amount,
+        status: "PENDING",
+        full_name: fullName,
+        email,
+        phone_number: phoneNumber,
+        profession,
+        remarks,
+        additional_products: additionalProducts,
+        coupon_code: couponCode,
+        coupon_discount: couponDiscount,
+      },
+    ]);
 
     return new Response(
       JSON.stringify({
         success: true,
         data: {
-          payment_session_id: cashfreeData.payment_session_id,
-          order_id: cashfreeData.order_id,
+          payment_session_id: cfData.payment_session_id,
+          order_id,
         },
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      {  headers: corsHeaders,status: 200 }
     );
-
   } catch (err) {
     console.error("create-session error:", err);
     return new Response(
       JSON.stringify({ success: false, error: err.message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      {  headers: corsHeaders,status: 500 }
     );
   }
 });

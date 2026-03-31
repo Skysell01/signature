@@ -114,7 +114,7 @@ function App() {
 
 
           {/* Old routes */}
-          {/* <Route path="/signature-cart" element={<SignatureCart />} /> */}
+          <Route path="/signature-cart-cashfree-supabase" element={< SignatureCartCashfreeSupabase/>} />
           <Route path="/signature-cart" element={<SignatureCartCashFree />} />
           {/* New Routes */}
           <Route path="/signature-cart-cashfree" element={<SignatureCartCashFree />} />

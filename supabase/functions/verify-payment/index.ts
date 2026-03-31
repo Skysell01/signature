@@ -1,9 +1,10 @@
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-
+// supabase/functions/verify-payment/index.ts
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, x-client-info, apikey, content-type",
+  "Access-Control-Allow-Headers": "authorization, apikey, content-type",
 };
+import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
+import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
@@ -11,67 +12,100 @@ serve(async (req) => {
   }
 
   try {
-    const { orderId } = await req.json();
+    const body = await req.json();
 
-    if (!orderId) {
-      return new Response(
-        JSON.stringify({ success: false, error: "orderId is required" }),
-        { status: 400, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+    const {
+      orderId,
+      statusOverride,
+      amount,
+      fullName,
+      email,
+      phoneNumber,
+      profession,
+      remarks,
+      additionalProducts,
+      couponCode,
+      couponDiscount,
+    } = body;
+
+    // 🔐 ENV
+    const CASHFREE_APP_ID = Deno.env.get("CASHFREE_APP_ID");
+    const CASHFREE_SECRET = Deno.env.get("CASHFREE_SECRET");
+    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+
+    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE!);
+
+    let finalStatus = "PENDING";
+
+    // ❌ CASE: Abandoned / Cancel
+    if (statusOverride === "ABANDONED") {
+      finalStatus = "ABANDONED";
+    } else {
+      // 🔍 Verify from Cashfree
+      const res = await fetch(
+        `https://api.cashfree.com/pg/orders/${orderId}`,
+        {
+          method: "GET",
+          headers: {
+            "x-client-id": CASHFREE_APP_ID!,
+            "x-client-secret": CASHFREE_SECRET!,
+            "x-api-version": "2022-09-01",
+          },
+        }
       );
-    }
 
-    // Fetch real payment status from Cashfree
-    const cashfreeResponse = await fetch(
-      `https://api.cashfree.com/pg/orders/${orderId}/payments`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-          "x-api-version": "2023-08-01",
-          "x-client-id": Deno.env.get("CASHFREE_APP_ID")!,
-          "x-client-secret": Deno.env.get("CASHFREE_SECRET_KEY")!,
-        },
+      const data = await res.json();
+
+      console.log("Cashfree verify:", data);
+
+      if (data.order_status === "PAID") {
+        finalStatus = "PAID";
+      } else if (data.order_status === "ACTIVE") {
+        finalStatus = "PENDING";
+      } else {
+        finalStatus = "FAILED";
       }
-    );
-
-    const payments = await cashfreeResponse.json();
-    console.log("Cashfree verify response:", JSON.stringify(payments));
-
-    if (!cashfreeResponse.ok) {
-      return new Response(
-        JSON.stringify({ success: false, error: payments }),
-        { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
-      );
     }
 
-    // payments is an array — find successful one
-    const successfulPayment = Array.isArray(payments)
-      ? payments.find((p) => p.payment_status === "SUCCESS")
-      : null;
-
-    const isSuccess = !!successfulPayment;
-
-    // Get real status from Cashfree
-    const paymentStatus = successfulPayment?.payment_status
-      || (Array.isArray(payments) && payments[0]?.payment_status)
-      || "PENDING";
+    // 🧾 Insert NEW row (no updates ever)
+    const { data: inserted } = await supabase
+      .from("orders")
+      .insert([
+        {
+          order_id: orderId,
+          amount,
+          status: finalStatus,
+          full_name: fullName,
+          email,
+          phone_number: phoneNumber,
+          profession,
+          remarks,
+          additional_products: additionalProducts,
+          coupon_code: couponCode,
+          coupon_discount: couponDiscount,
+        },
+      ])
+      .select()
+      .single();
 
     return new Response(
       JSON.stringify({
-        success: isSuccess,
-        paymentStatus,                              // SUCCESS / FAILED / PENDING / CANCELLED
-        paymentDetails: successfulPayment
-          || (Array.isArray(payments) ? payments[0] : null)
-          || null,
+        success: true,
+        status: finalStatus,
+        supabaseRowId: inserted.id,
       }),
-      { headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      {  headers: corsHeaders,status: 200 }
     );
-
   } catch (err) {
     console.error("verify-payment error:", err);
+
     return new Response(
-      JSON.stringify({ success: false, error: err.message }),
-      { status: 500, headers: { ...corsHeaders, "Content-Type": "application/json" } }
+      JSON.stringify({
+        success: false,
+        error: err.message,
+      }),
+      {  headers: corsHeaders,status: 500 }
     );
   }
 });
