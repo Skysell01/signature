@@ -1,8 +1,10 @@
 // supabase/functions/verify-payment/index.ts
+
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type",
 };
+
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
 import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
@@ -13,20 +15,7 @@ serve(async (req) => {
 
   try {
     const body = await req.json();
-
-    const {
-      orderId,
-      statusOverride,
-      amount,
-      fullName,
-      email,
-      phoneNumber,
-      profession,
-      remarks,
-      additionalProducts,
-      couponCode,
-      couponDiscount,
-    } = body;
+    const { orderId } = body;
 
     // 🔐 ENV
     const CASHFREE_APP_ID = Deno.env.get("CASHFREE_APP_ID");
@@ -36,66 +25,52 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE!);
 
-    let finalStatus = "PENDING";
+    // ✅ Fetch payment status from Cashfree
+    const res = await fetch(
+      `https://api.cashfree.com/pg/orders/${orderId}/payments`,
+      {
+        method: "GET",
+        headers: {
+          "x-client-id": CASHFREE_APP_ID!,
+          "x-client-secret": CASHFREE_SECRET!,
+          "x-api-version": "2022-09-01",
+        },
+      }
+    );
 
-    // ❌ CASE: Abandoned / Cancel
-    if (statusOverride === "ABANDONED") {
-      finalStatus = "ABANDONED";
-    } else {
-      // 🔍 Verify from Cashfree
-      const res = await fetch(
-        `https://api.cashfree.com/pg/orders/${orderId}`,
-        {
-          method: "GET",
-          headers: {
-            "x-client-id": CASHFREE_APP_ID!,
-            "x-client-secret": CASHFREE_SECRET!,
-            "x-api-version": "2022-09-01",
-          },
-        }
+    const payments = await res.json();
+
+    console.log("Cashfree payments:", payments);
+
+    // 🧠 Check if any payment is SUCCESS
+    let paymentStatus = "PENDING";
+
+    if (Array.isArray(payments)) {
+      const paid = payments.find(
+        (p) => p.payment_status === "SUCCESS"
       );
 
-      const data = await res.json();
-
-      console.log("Cashfree verify:", data);
-
-      if (data.order_status === "PAID") {
-        finalStatus = "PAID";
-      } else if (data.order_status === "ACTIVE") {
-        finalStatus = "PENDING";
+      if (paid) {
+        paymentStatus = "PAID";
       } else {
-        finalStatus = "FAILED";
+        paymentStatus = "FAILED";
       }
     }
 
-    // 🧾 Insert NEW row (no updates ever)
-    const { data: inserted } = await supabase
-      .from("orders")
-      .insert([
-        {
-          order_id: orderId,
-          amount,
-          status: finalStatus,
-          full_name: fullName,
-          email,
-          phone_number: phoneNumber,
-          profession,
-          remarks,
-          additional_products: additionalProducts,
-          coupon_code: couponCode,
-          coupon_discount: couponDiscount,
-        },
-      ])
-      .select()
-      .single();
+    // 📝 Insert new row (DO NOT UPDATE)
+    await supabase.from("orders").insert([
+      {
+        order_id: orderId,
+        status: paymentStatus,
+      },
+    ]);
 
     return new Response(
       JSON.stringify({
-        success: true,
-        status: finalStatus,
-        supabaseRowId: inserted.id,
+        success: paymentStatus === "PAID",
+        status: paymentStatus,
       }),
-      {  headers: corsHeaders,status: 200 }
+      { headers: corsHeaders, status: 200 }
     );
   } catch (err) {
     console.error("verify-payment error:", err);
@@ -105,7 +80,7 @@ serve(async (req) => {
         success: false,
         error: err.message,
       }),
-      {  headers: corsHeaders,status: 500 }
+      { headers: corsHeaders, status: 500 }
     );
   }
 });
