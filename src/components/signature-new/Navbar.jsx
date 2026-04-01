@@ -101,7 +101,7 @@ const Navbar = () => {
           {/* CTA Button - Hidden on mobile */}
           <div className="hidden md:block">
             <button
-              onClick={() => navigate("/signature-new-cart")}
+              onClick={() => navigate("/signature-new-cart-supabase")}
               className="bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white px-6 py-3 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-yellow-500/25"
             >
               Get Started
@@ -149,7 +149,7 @@ const Navbar = () => {
               {/* Mobile CTA */}
               <div className="px-4 mt-6">
                 <button
-                  onClick={() => navigate("/signature-new-cart")}
+                  onClick={() => navigate("/signature-new-cart-supabase")}
                   className="w-full bg-gradient-to-r from-yellow-500 to-amber-500 hover:from-yellow-600 hover:to-amber-600 text-white py-3 px-6 rounded-xl font-semibold hover:shadow-lg transform hover:scale-[1.02] transition-all duration-200"
                 >
                   Get Started

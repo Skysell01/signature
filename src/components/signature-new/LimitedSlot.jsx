@@ -6,7 +6,7 @@ const LimitedSlot = () => {
   const navigate = useNavigate();
 
   const handleCTAClick = () => {
-    navigate("/signature-new-cart", { state: { scrollToTop: true } });
+    navigate("/signature-new-cart-supabase", { state: { scrollToTop: true } });
   };
 
   const finalBenefits = [

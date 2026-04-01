@@ -16,7 +16,7 @@ const CtaButton = ({
   const handleClick = () => {
     setIsClicked(true);
     setTimeout(() => setIsClicked(false), 200);
-    navigate("/signature-new-cart", { state: { scrollToTop: true } });
+    navigate("/signature-new-cart-supabase", { state: { scrollToTop: true } });
   };
 
   const isSmall = size === "small";

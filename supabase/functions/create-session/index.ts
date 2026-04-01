@@ -51,9 +51,11 @@ serve(async (req) => {
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE!);
 
     // Switch Cashfree base URL based on mode
-    const CF_BASE_URL = CASHFREE_MODE === "sandbox"
-      ? "https://sandbox.cashfree.com"
-      : "https://api.cashfree.com";
+
+const CF_BASE_URL =
+  CASHFREE_MODE === "sandbox"
+    ? "https://sandbox.cashfree.com"
+    : "https://api.cashfree.com";
 
     const order_id = "order_" + Date.now();
 

@@ -198,7 +198,7 @@ const Testimonial = () => {
             </p>
 
             <button
-              onClick={() => navigate("/signature-new-cart")}
+              onClick={() => navigate("/signature-new-cart-supabase")}
               className="bg-gradient-to-r from-yellow-400 to-amber-500 text-white px-6 py-3 rounded-xl font-semibold hover:from-yellow-500 hover:to-amber-600 transform hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               Start Your Transformation
