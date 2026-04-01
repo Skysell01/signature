@@ -139,18 +139,44 @@ function SignatureNewCartSupabase() {
     try {
       setCreatingSession(true);
 
+      // const payload = {
+      //   amount:             total,
+      //   fullName:           consultationFormData.name,
+      //   email:              consultationFormData.email,
+      //   phoneNumber:        consultationFormData.phoneNumber,
+      //   profession:         consultationFormData.profession,
+      //   remarks:            consultationFormData.remarks,
+      //   additionalProducts: selectedAdditionalProducts.map((p) => p.title),
+      //   couponCode:         ragCoupon,
+      //   couponDiscount:     couponDiscount,
+      //   url: `${window.location.origin}/signature-new-order-confirmation-supabase`,
+      // };
       const payload = {
-        amount:             total,
-        fullName:           consultationFormData.name,
-        email:              consultationFormData.email,
-        phoneNumber:        consultationFormData.phoneNumber,
-        profession:         consultationFormData.profession,
-        remarks:            consultationFormData.remarks,
-        additionalProducts: selectedAdditionalProducts.map((p) => p.title),
-        couponCode:         ragCoupon,
-        couponDiscount:     couponDiscount,
-        url: `${window.location.origin}/signature-new-order-confirmation-supabase`,
-      };
+  amount: total,
+
+  fullName:
+    consultationFormData.name?.trim() || "Guest User",
+
+  email:
+    consultationFormData.email?.trim() || `guest${Date.now()}@gmail.com`,
+
+  phoneNumber:
+    consultationFormData.phoneNumber?.replace(/\D/g, "") || "9999999999",
+
+  profession:
+    consultationFormData.profession?.trim() || "Not Provided",
+
+  remarks:
+    consultationFormData.remarks?.trim() || "No remarks",
+
+  additionalProducts:
+    selectedAdditionalProducts.map((p) => p.title) || [],
+
+  couponCode: ragCoupon || null,
+  couponDiscount: couponDiscount || 0,
+
+  url: `${window.location.origin}/signature-new-order-confirmation-supabase`,
+};
 
       // Save to localStorage so confirmation page can read it
       localStorage.setItem("orderData", JSON.stringify({
@@ -158,11 +184,7 @@ function SignatureNewCartSupabase() {
         originalAmount: subtotal,
       }));
 
-    //   const res = await fetch(`${FUNCTIONS_URL}/create-session`, {
-    //     method:  "POST",
-    //     headers: { "Content-Type": "application/json" },
-    //     body:    JSON.stringify(payload),
-    //   });
+    
     const res = await fetch(`${FUNCTIONS_URL}/create-session`, {
   method: "POST",
   headers: {
@@ -200,10 +222,7 @@ function SignatureNewCartSupabase() {
       return;
     }
 
-    if (!consultationFormData.name || !consultationFormData.phoneNumber || !consultationFormData.email) {
-      toast.error("Please fill in your name, phone, and email before paying.");
-      return;
-    }
+   
 
     setIsCheckingOut(true);
 
