@@ -49,7 +49,7 @@ serve(async (req) => {
       .replace("Z", "");
 
     // Create Cashfree order
-    const cfRes = await fetch("https://api.cashfree.com/pg/orders", {
+    const cfRes = await fetch("https://sandbox.cashfree.com/pg/orders", {
       method: "POST",
       headers: {
         "Content-Type":    "application/json",

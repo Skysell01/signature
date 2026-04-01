@@ -31,7 +31,7 @@ serve(async (req) => {
 
     // Fetch payment status from Cashfree
     const res = await fetch(
-      `https://api.cashfree.com/pg/orders/${orderId}/payments`,
+      `https://sandbox.cashfree.com/pg/orders/${orderId}/payments`,
       {
         method: "GET",
         headers: {
@@ -42,18 +42,29 @@ serve(async (req) => {
       }
     );
 
+    // const payments = await res.json();
+    // console.log("Cashfree payments:", payments);
+
+    // // Determine final status
+    // let paymentStatus = "FAILED";
+
+    // if (Array.isArray(payments)) {
+    //   const paid = payments.find((p) => p.payment_status === "SUCCESS");
+    //   if (paid) {
+    //     paymentStatus = "PAID";
+    //   }
+    // }
     const payments = await res.json();
-    console.log("Cashfree payments:", payments);
 
-    // Determine final status
-    let paymentStatus = "FAILED";
+let paymentStatus = "ABANDONED";
 
-    if (Array.isArray(payments)) {
-      const paid = payments.find((p) => p.payment_status === "SUCCESS");
-      if (paid) {
-        paymentStatus = "PAID";
-      }
-    }
+if (Array.isArray(payments)) {
+  const paid = payments.find((p) => p.payment_status === "SUCCESS");
+
+  if (paid) {
+    paymentStatus = "PAID";
+  }
+}
 
     // UPDATE existing row — fixes the original INSERT bug
     const { error: updateError } = await supabase

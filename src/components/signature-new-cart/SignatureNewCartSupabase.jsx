@@ -8,7 +8,7 @@ import SignatureCartConsultationForm from "./SignatureCartConsultationForm";
 import { load } from "@cashfreepayments/cashfree-js";
 import { toast } from "react-toastify";
 
-const FUNCTIONS_URL = import.meta.env.VITE_SUPABASE_URL;
+const FUNCTIONS_URL = import.meta.env.VITE_SUPABASE_FUNCTION_URL;
 
 function SignatureNewCartSupabase() {
   const navigate = useNavigate();
