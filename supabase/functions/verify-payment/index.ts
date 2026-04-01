@@ -1,95 +1,6 @@
-// const corsHeaders = {
-//   "Access-Control-Allow-Origin": "*",
-//   "Access-Control-Allow-Headers": "authorization, apikey, content-type",
-// };
-
-// import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-// import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-// serve(async (req) => {
-//   if (req.method === "OPTIONS") {
-//     return new Response("ok", { headers: corsHeaders });
-//   }
-
-//   try {
-//     const { orderId } = await req.json();
-
-//     if (!orderId) {
-//       return new Response(
-//         JSON.stringify({ success: false, error: "orderId is required" }),
-//         { status: 400, headers: corsHeaders }
-//       );
-//     }
-
-//     const CASHFREE_APP_ID       = Deno.env.get("CASHFREE_APP_ID");
-//     const CASHFREE_SECRET       = Deno.env.get("CASHFREE_SECRET");
-//     const SUPABASE_URL          = Deno.env.get("SUPABASE_URL");
-//     const SUPABASE_SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
-
-//     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE!);
-
-//     // 🔥 IMPORTANT: use correct base URL
-//     const BASE_URL =
-//       Deno.env.get("CASHFREE_MODE") === "sandbox"
-//         ? "https://sandbox.cashfree.com"
-//         : "https://api.cashfree.com";
-
-//     const res = await fetch(
-//       `${BASE_URL}/pg/orders/${orderId}/payments`,
-//       {
-//         method: "GET",
-//         headers: {
-//           "x-client-id":     CASHFREE_APP_ID!,
-//           "x-client-secret": CASHFREE_SECRET!,
-//           "x-api-version":   "2022-09-01",
-//         },
-//       }
-//     );
-
-//     const payments = await res.json();
-//     console.log("Cashfree payments:", payments);
-
-//     // ✅ FINAL STATUS LOGIC
-//     let paymentStatus = "ABANDONED";
-
-//     if (Array.isArray(payments)) {
-//       const paid = payments.find((p) => p.payment_status === "SUCCESS");
-//       if (paid) {
-//         paymentStatus = "PAID";
-//       }
-//     }
-
-//     // ✅ UPDATE existing order
-//     const { error } = await supabase
-//       .from("orders")
-//       .update({ status: paymentStatus })
-//       .eq("order_id", orderId);
-
-//     if (error) {
-//       console.error("Supabase update error:", error.message);
-//     }
-
-//     return new Response(
-//       JSON.stringify({
-//         success: paymentStatus === "PAID",
-//         status: paymentStatus,
-//       }),
-//       { status: 200, headers: corsHeaders }
-//     );
-
-//   } catch (err) {
-//     console.error("verify-payment error:", err);
-//     return new Response(
-//       JSON.stringify({ success: false, error: err.message }),
-//       { status: 500, headers: corsHeaders }
-//     );
-//   }
-// });
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type",
-  "Content-Type": "application/json",
 };
 
 import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
@@ -97,9 +8,7 @@ import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
 
 serve(async (req) => {
   if (req.method === "OPTIONS") {
-    return new Response(JSON.stringify({ ok: true }), {
-      headers: corsHeaders,
-    });
+    return new Response("ok", { headers: corsHeaders });
   }
 
   try {
@@ -112,90 +21,45 @@ serve(async (req) => {
       );
     }
 
-    const CASHFREE_APP_ID = Deno.env.get("CASHFREE_APP_ID");
-    const CASHFREE_SECRET = Deno.env.get("CASHFREE_SECRET");
-    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-    const SUPABASE_SERVICE_ROLE = Deno.env.get(
-      "SUPABASE_SERVICE_ROLE_KEY"
-    );
+    const CASHFREE_APP_ID       = Deno.env.get("CASHFREE_APP_ID");
+    const CASHFREE_SECRET       = Deno.env.get("CASHFREE_SECRET");
+    const SUPABASE_URL          = Deno.env.get("SUPABASE_URL");
+    const SUPABASE_SERVICE_ROLE = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE!);
 
-    // ✅ MODE SWITCH (correct)
+    // 🔥 IMPORTANT: use correct base URL
     const BASE_URL =
       Deno.env.get("CASHFREE_MODE") === "sandbox"
         ? "https://sandbox.cashfree.com"
         : "https://api.cashfree.com";
 
-    // =========================
-    // 💳 FETCH PAYMENT STATUS
-    // =========================
     const res = await fetch(
       `${BASE_URL}/pg/orders/${orderId}/payments`,
       {
         method: "GET",
         headers: {
-          "x-client-id": CASHFREE_APP_ID!,
+          "x-client-id":     CASHFREE_APP_ID!,
           "x-client-secret": CASHFREE_SECRET!,
-          "x-api-version": "2022-09-01",
+          "x-api-version":   "2022-09-01",
         },
       }
     );
 
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("Cashfree API error:", text);
-
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Cashfree API failed",
-        }),
-        { status: 500, headers: corsHeaders }
-      );
-    }
-
-    let payments = [];
-    try {
-      payments = await res.json();
-    } catch {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Invalid response from Cashfree",
-        }),
-        { status: 500, headers: corsHeaders }
-      );
-    }
-
+    const payments = await res.json();
     console.log("Cashfree payments:", payments);
 
-    // =========================
     // ✅ FINAL STATUS LOGIC
-    // =========================
     let paymentStatus = "ABANDONED";
 
-    if (Array.isArray(payments) && payments.length > 0) {
-      const successPayment = payments.find(
-        (p) => p.payment_status === "SUCCESS"
-      );
-
-      if (successPayment) {
+    if (Array.isArray(payments)) {
+      const paid = payments.find((p) => p.payment_status === "SUCCESS");
+      if (paid) {
         paymentStatus = "PAID";
-      } else {
-        const failedPayment = payments.find(
-          (p) => p.payment_status === "FAILED"
-        );
-
-        if (failedPayment) {
-          paymentStatus = "FAILED";
-        }
       }
     }
 
-    // =========================
-    // 🧾 UPDATE DB
-    // =========================
+    // ✅ UPDATE existing order
     const { error } = await supabase
       .from("orders")
       .update({ status: paymentStatus })
@@ -205,9 +69,6 @@ serve(async (req) => {
       console.error("Supabase update error:", error.message);
     }
 
-    // =========================
-    // ✅ RESPONSE
-    // =========================
     return new Response(
       JSON.stringify({
         success: paymentStatus === "PAID",
@@ -218,154 +79,10 @@ serve(async (req) => {
 
   } catch (err) {
     console.error("verify-payment error:", err);
-
     return new Response(
-      JSON.stringify({
-        success: false,
-        error: err.message || "Something went wrong",
-      }),
-      { status: 500, headers: corsHeaders }
-    );
-  }
-});const corsHeaders = {
-  "Access-Control-Allow-Origin": "*",
-  "Access-Control-Allow-Headers": "authorization, apikey, content-type",
-  "Content-Type": "application/json",
-};
-
-import { serve } from "https://deno.land/std@0.168.0/http/server.ts";
-import { createClient } from "https://esm.sh/@supabase/supabase-js@2";
-
-serve(async (req) => {
-  if (req.method === "OPTIONS") {
-    return new Response(JSON.stringify({ ok: true }), {
-      headers: corsHeaders,
-    });
-  }
-
-  try {
-    const { orderId } = await req.json();
-
-    if (!orderId) {
-      return new Response(
-        JSON.stringify({ success: false, error: "orderId is required" }),
-        { status: 400, headers: corsHeaders }
-      );
-    }
-
-    const CASHFREE_APP_ID = Deno.env.get("CASHFREE_APP_ID");
-    const CASHFREE_SECRET = Deno.env.get("CASHFREE_SECRET");
-    const SUPABASE_URL = Deno.env.get("SUPABASE_URL");
-    const SUPABASE_SERVICE_ROLE = Deno.env.get(
-      "SUPABASE_SERVICE_ROLE_KEY"
-    );
-
-    const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE!);
-
-    // ✅ MODE SWITCH (correct)
-    const BASE_URL =
-      Deno.env.get("CASHFREE_MODE") === "sandbox"
-        ? "https://sandbox.cashfree.com"
-        : "https://api.cashfree.com";
-
-    // =========================
-    // 💳 FETCH PAYMENT STATUS
-    // =========================
-    const res = await fetch(
-      `${BASE_URL}/pg/orders/${orderId}/payments`,
-      {
-        method: "GET",
-        headers: {
-          "x-client-id": CASHFREE_APP_ID!,
-          "x-client-secret": CASHFREE_SECRET!,
-          "x-api-version": "2022-09-01",
-        },
-      }
-    );
-
-    if (!res.ok) {
-      const text = await res.text();
-      console.error("Cashfree API error:", text);
-
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Cashfree API failed",
-        }),
-        { status: 500, headers: corsHeaders }
-      );
-    }
-
-    let payments = [];
-    try {
-      payments = await res.json();
-    } catch {
-      return new Response(
-        JSON.stringify({
-          success: false,
-          error: "Invalid response from Cashfree",
-        }),
-        { status: 500, headers: corsHeaders }
-      );
-    }
-
-    console.log("Cashfree payments:", payments);
-
-    // =========================
-    // ✅ FINAL STATUS LOGIC
-    // =========================
-    let paymentStatus = "ABANDONED";
-
-    if (Array.isArray(payments) && payments.length > 0) {
-      const successPayment = payments.find(
-        (p) => p.payment_status === "SUCCESS"
-      );
-
-      if (successPayment) {
-        paymentStatus = "PAID";
-      } else {
-        const failedPayment = payments.find(
-          (p) => p.payment_status === "FAILED"
-        );
-
-        if (failedPayment) {
-          paymentStatus = "FAILED";
-        }
-      }
-    }
-
-    // =========================
-    // 🧾 UPDATE DB
-    // =========================
-    const { error } = await supabase
-      .from("orders")
-      .update({ status: paymentStatus })
-      .eq("order_id", orderId);
-
-    if (error) {
-      console.error("Supabase update error:", error.message);
-    }
-
-    // =========================
-    // ✅ RESPONSE
-    // =========================
-    return new Response(
-      JSON.stringify({
-        success: paymentStatus === "PAID",
-        status: paymentStatus,
-      }),
-      { status: 200, headers: corsHeaders }
-    );
-
-  } catch (err) {
-    console.error("verify-payment error:", err);
-
-    return new Response(
-      JSON.stringify({
-        success: false,
-        error: err.message || "Something went wrong",
-      }),
+      JSON.stringify({ success: false, error: err.message }),
       { status: 500, headers: corsHeaders }
     );
   }
 });
+
