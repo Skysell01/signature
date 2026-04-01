@@ -46,6 +46,7 @@ import SignatureNewCartCashFree from "./components/signature-new-cart/SignatureN
 import SignatureTryCartCashFree from "./components/signature-try-cart/SignatureTryCartCashFree";
 import SignatureNewCartCashFreeV2 from "./components/signature-new-cart-v2/SignatureNewCartCashFree";
 import SignatureNewOrderConfirmationCashfree from "./pages/new/SignatureNewOrderConfirmationCashfree";
+import SignatureNewOrderConfirmationSupabase from "./pages/new/SignatureNewOrderConfirmationSupabase"
 import SignatureTryOrderConfirmationCashfree from "./components/signature-try/SignatureTryOrderConfirmationCashfree";
 import Signature4 from "./pages/Signature4";
 import SignatureStudioLanding from "./signature4/SignatureStudioLanding";
@@ -153,7 +154,11 @@ function App() {
             path="/signature-order-confirmation"
             element={<SignatureOrderConfirmationCashfree />}
           />
-
+          <Route
+            path="/signature-new-order-confirmation-supabase"
+            element={<SignatureNewOrderConfirmationSupabase />}
+          />
+                   
             {/* New Route */}
             <Route
               path="/signature-order-confirmation-cashfree"

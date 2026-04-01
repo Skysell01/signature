@@ -158,11 +158,19 @@ function SignatureNewCartSupabase() {
         originalAmount: subtotal,
       }));
 
-      const res = await fetch(`${FUNCTIONS_URL}/create-session`, {
-        method:  "POST",
-        headers: { "Content-Type": "application/json" },
-        body:    JSON.stringify(payload),
-      });
+    //   const res = await fetch(`${FUNCTIONS_URL}/create-session`, {
+    //     method:  "POST",
+    //     headers: { "Content-Type": "application/json" },
+    //     body:    JSON.stringify(payload),
+    //   });
+    const res = await fetch(`${FUNCTIONS_URL}/create-session`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+  },
+  body: JSON.stringify(payload),
+});
 
       const data = await res.json();
 
@@ -223,7 +231,7 @@ function SignatureNewCartSupabase() {
             couponDiscount,
             originalAmount:     subtotal,
           }));
-          navigate("/signature-new-order-confirmation", {
+          navigate("/signature-new-order-confirmation-supabase", {
             state: { orderId: data.orderId, amount: total },
           });
         },

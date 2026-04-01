@@ -12,8 +12,7 @@ serve(async (req) => {
   }
 
   try {
-    const body = await req.json();
-    const { orderId } = body;
+    const { orderId } = await req.json();
 
     if (!orderId) {
       return new Response(
@@ -29,9 +28,14 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE!);
 
-    // Fetch payment status from Cashfree
+    // 🔥 IMPORTANT: use correct base URL
+    const BASE_URL =
+      Deno.env.get("CASHFREE_MODE") === "sandbox"
+        ? "https://sandbox.cashfree.com"
+        : "https://api.cashfree.com";
+
     const res = await fetch(
-      `https://sandbox.cashfree.com/pg/orders/${orderId}/payments`,
+      `${BASE_URL}/pg/orders/${orderId}/payments`,
       {
         method: "GET",
         headers: {
@@ -42,45 +46,33 @@ serve(async (req) => {
       }
     );
 
-    // const payments = await res.json();
-    // console.log("Cashfree payments:", payments);
-
-    // // Determine final status
-    // let paymentStatus = "FAILED";
-
-    // if (Array.isArray(payments)) {
-    //   const paid = payments.find((p) => p.payment_status === "SUCCESS");
-    //   if (paid) {
-    //     paymentStatus = "PAID";
-    //   }
-    // }
     const payments = await res.json();
+    console.log("Cashfree payments:", payments);
 
-let paymentStatus = "ABANDONED";
+    // ✅ FINAL STATUS LOGIC
+    let paymentStatus = "ABANDONED";
 
-if (Array.isArray(payments)) {
-  const paid = payments.find((p) => p.payment_status === "SUCCESS");
+    if (Array.isArray(payments)) {
+      const paid = payments.find((p) => p.payment_status === "SUCCESS");
+      if (paid) {
+        paymentStatus = "PAID";
+      }
+    }
 
-  if (paid) {
-    paymentStatus = "PAID";
-  }
-}
-
-    // UPDATE existing row — fixes the original INSERT bug
-    const { error: updateError } = await supabase
+    // ✅ UPDATE existing order
+    const { error } = await supabase
       .from("orders")
       .update({ status: paymentStatus })
       .eq("order_id", orderId);
 
-    if (updateError) {
-      console.error("Supabase update error:", updateError.message);
-      // Non-fatal — still return status to frontend
+    if (error) {
+      console.error("Supabase update error:", error.message);
     }
 
     return new Response(
       JSON.stringify({
         success: paymentStatus === "PAID",
-        status:  paymentStatus,
+        status: paymentStatus,
       }),
       { status: 200, headers: corsHeaders }
     );
