@@ -1,5 +1,3 @@
-// supabase/functions/create-session/index.ts
-
 const corsHeaders = {
   "Access-Control-Allow-Origin": "*",
   "Access-Control-Allow-Headers": "authorization, apikey, content-type",
@@ -31,7 +29,6 @@ serve(async (req) => {
 
     console.log("URL RECEIVED:", url);
 
-    // 🔐 ENV
     const CASHFREE_APP_ID       = Deno.env.get("CASHFREE_APP_ID");
     const CASHFREE_SECRET       = Deno.env.get("CASHFREE_SECRET");
     const SUPABASE_URL          = Deno.env.get("SUPABASE_URL");
@@ -39,26 +36,19 @@ serve(async (req) => {
 
     const supabase = createClient(SUPABASE_URL!, SUPABASE_SERVICE_ROLE!);
 
-    // 🆔 Unique order ID
     const order_id = "order_" + Date.now();
 
-    // ✅ Safe return URL
     const safeUrl =
       url && url.startsWith("https")
         ? url
-        : "https://designsignature.in/signature-order-confirmation-cashfree";
+        : "https://designsignature.in/signature-new-order-confirmation";
 
-    // 🕐 IST timestamp (UTC+5:30)
-    // Table is `timestamp` without timezone, so we manually shift to IST
-    // and store it as a plain local time string
     const nowIST = new Date(Date.now() + 5.5 * 60 * 60 * 1000)
       .toISOString()
       .replace("T", " ")
       .replace("Z", "");
-    // Result looks like: "2025-07-15 14:07:32.123"
-    // Supabase will store this as-is since the column has no timezone
 
-    // 💳 Create Cashfree order
+    // Create Cashfree order
     const cfRes = await fetch("https://api.cashfree.com/pg/orders", {
       method: "POST",
       headers: {
@@ -93,21 +83,21 @@ serve(async (req) => {
       );
     }
 
-    // 🧾 Insert PENDING row — columns match your exact table schema
+    // Insert PENDING row — column names match your DB exactly
     const { error: insertError } = await supabase.from("orders").insert([
       {
-        order_id,                              // text
-        amount,                                // numeric
-        status:              "PENDING",        // text  ✅ correct column name
-        full_name:           fullName  || null,
-        email:               email     || null,
+        order_id,
+        amount,
+        status:              "PENDING",
+        full_name:           fullName    || null,
+        email:               email       || null,
         phone_number:        phoneNumber || null,
         profession:          profession  || null,
         remarks:             remarks     || null,
         additional_products: additionalProducts || [],
-        coupon_code:         couponCode   || null,
+        coupon_code:         couponCode  || null,
         coupon_discount:     couponDiscount || 0,
-        created_at:          nowIST,           // IST time ✅
+        created_at:          nowIST,
       },
     ]);
 

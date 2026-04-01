@@ -37,6 +37,7 @@ import SignatureOrderConfirmationCashfree from "./pages/SignatureOrderConfirmati
 import SignatureNewAbondentReport from "./pages/new/SignatureNewAbondentReport";
 import SignatureTryAbondentReport from "./components/signature-try/SignTryAbd";
 
+
 import SignatureNewAbondentReportv2 from "./pages/new/Sigv2";
 import SignatureNewRecord from "./pages/new/SignatureNewRecord";
 import SignatureTryRecord from "./components/signature-try/SignatureTryRecord";
@@ -60,6 +61,7 @@ import SignatureStudio from "./pages/SignatureStudio";
 import SigguLander from "./pages/SigguLander";
 import LogsPage from "./pages/log";
 import SignatureRecordSupabase from "./pages/SignatureRecordSupabase";
+import SignatureNewCartSupabase from "./components/signature-new-cart/SignatureNewCartSupabase";
 
 
 
@@ -123,6 +125,7 @@ function App() {
 
           {/* <Route path="/signature-new-cart" element={<SignatureNewCart />} /> */}
           <Route path="/signature-new-cart" element={<SignatureNewCartCashFree />} />
+          <Route path="/signature-new-cart-supabase" element={<SignatureNewCartSupabase />} />
             <Route path="/signature-try-cart" element={<SignatureTryCartCashFree />} />
               <Route path="/signature-new-cart-v2" element={<SignatureNewCartCashFreeV2 />} />
  
