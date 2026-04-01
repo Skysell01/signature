@@ -149,7 +149,7 @@ function SignatureNewCartSupabase() {
         additionalProducts: selectedAdditionalProducts.map((p) => p.title),
         couponCode:         ragCoupon,
         couponDiscount:     couponDiscount,
-        url: `${window.location.origin}/signature-new-order-confirmation`,
+        url: `${window.location.origin}/signature-new-order-confirmation-supabase`,
       };
 
       // Save to localStorage so confirmation page can read it
