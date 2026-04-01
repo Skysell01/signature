@@ -41,7 +41,7 @@ serve(async (req) => {
     const safeUrl =
       url && url.startsWith("https")
         ? url
-        : "https://designsignature.in/signature-new-order-confirmation";
+        : "https://designsignature.in/signature-new-order-confirmation-supabase";
 
     const nowIST = new Date(Date.now() + 5.5 * 60 * 60 * 1000)
       .toISOString()

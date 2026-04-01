@@ -64,72 +64,47 @@ const SignatureNewOrderConfirmationSupabase = () => {
   useEffect(() => {
   const verifyPayment = async () => {
     try {
-      setOrderStatus("verifying");
+      const params = new URLSearchParams(window.location.search);
+      const orderId =
+        params.get("orderId") || localStorage.getItem("pendingOrderId");
 
-      const orderId = localStorage.getItem("pendingOrderId");
+      // 🛑 Normal visit → do nothing
+      if (!orderId) return;
 
-      if (!orderId) {
-        throw new Error("No order ID found");
-      }
+      console.log("🔍 Verifying payment for:", orderId);
 
-      const res = await fetch(`${FUNCTIONS_URL}/verify-payment`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
-        },
-        body: JSON.stringify({ orderId }),
-      });
+      const res = await fetch(
+        `${import.meta.env.VITE_SUPABASE_FUNCTIONS_URL}/verify-payment`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${import.meta.env.VITE_SUPABASE_ANON_KEY}`,
+          },
+          body: JSON.stringify({ orderId }),
+        }
+      );
 
       const data = await res.json();
-      console.log("VERIFY RESULT:", data);
+      console.log("✅ VERIFY RESULT:", data);
 
-      // ✅ PAYMENT SUCCESS
+      // ✅ PAYMENT SUCCESS → redirect to confirmation page
       if (data.status === "PAID") {
-        toast.success("Payment successful!");
-
-        // 🔥 CREATE ORDER (PAID)
-        await axios.post(
-          `${BACKEND_URL}/api/signature/rag-v2/create-order`,
-          {
-            ...(storedOrderData || {}),
-            orderId,
-            amount: storedOrderData?.amount || 489,
-            paymentStatus: "PAID",
-          }
-        );
-
-        setOrderStatus("success");
-
-        // cleanup
-        localStorage.removeItem("orderData");
         localStorage.removeItem("pendingOrderId");
-        localStorage.removeItem("abandonedCartID");
+
+        window.location.href = `/signature-new-order-confirmation-supabase?orderId=${orderId}`;
       }
 
       // ❌ PAYMENT FAILED
       else {
-        toast.error("Payment failed or cancelled");
-
-        // 🔥 CREATE ABANDONED ORDER
-        await axios.post(
-          `${BACKEND_URL}/api/lander4/create-abandoned-order`,
-          {
-            ...(storedOrderData || {}),
-            orderId,
-            amount: storedOrderData?.amount || 489,
-            paymentStatus: "FAILED",
-          }
-        );
-
-        setOrderStatus("failed");
-
         localStorage.removeItem("pendingOrderId");
+
+        console.warn("❌ Payment failed or cancelled");
+        // optional:
+        // toast.error("Payment failed or cancelled");
       }
     } catch (err) {
-      console.error("Verification error:", err);
-      setOrderStatus("failed");
-      setErrorMessage("Error verifying payment");
+      console.error("❌ Verification error:", err);
     }
   };
 
