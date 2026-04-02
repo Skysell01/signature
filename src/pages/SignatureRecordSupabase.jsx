@@ -278,17 +278,19 @@ const SignatureRecordSupabase = () => {
 
       // ✅ SAFE + CLEAN MAPPING
       const formatted = data.map((order) => ({
-        orderId: order.order_id || "N/A",
-        fullName: order.full_name || "Guest User",
-        email: order.email || "No Email",
-        phoneNumber: order.phone_number || "No Phone",
-        profession: order.profession || "N/A",
-        remarks: order.remarks || "",
-        additionalProducts: order.additional_products || [],
-        amount: Number(order.amount || 0),
-        orderDate: order.created_at,
-        status: order.status || "PENDING",
-      }));
+  orderId: order.cashfree_order_id || "N/A",   // ✅ was: order.order_id
+  fullName: order.full_name || "Guest User",
+  email: order.email || "No Email",
+  phoneNumber: order.phone_number || "No Phone",
+  profession: order.profession || "N/A",
+  remarks: order.remarks || "",
+  additionalProducts: order.additional_products || [],
+  couponCode: order.coupon_code || null,
+  couponDiscount: order.coupon_discount || 0,
+  amount: Number(order.amount || 0),
+  orderDate: order.created_at,
+  status: order.payment_status || "PENDING",   // ✅ was: order.status
+}));
 
       setOrders(formatted);
     } catch (err) {
