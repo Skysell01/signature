@@ -62,8 +62,8 @@ serve(async (req) => {
     // ✅ UPDATE existing order
     const { error } = await supabase
       .from("orders")
-      .update({ status: paymentStatus })
-      .eq("order_id", orderId);
+      .update({ payment_status: paymentStatus })
+      .eq("cashfree_order_id", orderId);
 
     if (error) {
       console.error("Supabase update error:", error.message);

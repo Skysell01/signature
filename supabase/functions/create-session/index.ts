@@ -117,9 +117,9 @@ const CF_BASE_URL =
     // Insert PENDING row
     const { error: insertError } = await supabase.from("orders").insert([
       {
-        order_id,
+        cashfree_order_id:   order_id, 
         amount,
-        status:              "PENDING",
+       payment_status:      "PENDING", 
         full_name:           fullName    || null,
         email:               email       || null,
         phone_number:        phoneNumber || null,
