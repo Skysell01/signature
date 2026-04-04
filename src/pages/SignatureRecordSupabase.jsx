@@ -510,6 +510,7 @@ const SignatureRecordSupabase = () => {
   const [loading, setLoading]   = useState(true);
   const [error, setError]       = useState(null);
   const [searchTerm, setSearchTerm] = useState("");
+  const [statusFilter, setStatusFilter] = useState("ALL");
 
   useEffect(() => {
     if (authed) fetchOrders();
@@ -581,12 +582,27 @@ const SignatureRecordSupabase = () => {
     link.click();
   };
 
-  const filteredOrders = orders.filter(
-    (o) =>
-      o.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      o.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      o.orderId?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  // const filteredOrders = orders.filter(
+  //   (o) =>
+  //     o.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     o.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+  //     o.orderId?.toLowerCase().includes(searchTerm.toLowerCase())
+  // );
+  const filteredOrders = orders.filter((o) => {
+  const matchesSearch =
+    o.fullName?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    o.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    o.orderId?.toLowerCase().includes(searchTerm.toLowerCase());
+
+  const matchesStatus =
+    statusFilter === "ALL"
+      ? true
+      : statusFilter === "PAID"
+      ? o.status === "PAID"
+      : o.status === "PENDING" || o.status === "ABANDONED";
+
+  return matchesSearch && matchesStatus;
+});
 
   // ── Password gate ──────────────────────────────────────────────────────────
   if (!authed) {
@@ -658,6 +674,40 @@ const SignatureRecordSupabase = () => {
             Export CSV
           </button>
         </div>
+        <div className="flex gap-3 mb-4">
+  <button
+    onClick={() => setStatusFilter("ALL")}
+    className={`px-4 py-2 rounded ${
+      statusFilter === "ALL"
+        ? "bg-black text-white"
+        : "bg-gray-200 text-black"
+    }`}
+  >
+    All
+  </button>
+
+  <button
+    onClick={() => setStatusFilter("PAID")}
+    className={`px-4 py-2 rounded ${
+      statusFilter === "PAID"
+        ? "bg-green-600 text-white"
+        : "bg-gray-200 text-black"
+    }`}
+  >
+    Paid
+  </button>
+
+  <button
+    onClick={() => setStatusFilter("PENDING")}
+    className={`px-4 py-2 rounded ${
+      statusFilter === "PENDING"
+        ? "bg-yellow-500 text-white"
+        : "bg-gray-200 text-black"
+    }`}
+  >
+    Pending / Abandoned
+  </button>
+</div>
 
         {/* Table */}
         <div className="bg-white rounded shadow overflow-auto">
