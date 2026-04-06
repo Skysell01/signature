@@ -26,12 +26,14 @@ function SignatureNewCartSupabase() {
   const ragCoupon =
     urlParams.get("rag30") !== null ? "rag30" :
     urlParams.get("rag60") !== null ? "rag60" :
-    urlParams.get("rag75") !== null ? "rag75" : null;
+    urlParams.get("rag75") !== null ? "rag75" : 
+     urlParams.get("rag99") !== null ? "rag99" : null;
 
   const getCouponDiscount = (coupon) => {
     if (coupon === "rag30") return 30;
     if (coupon === "rag60") return 60;
     if (coupon === "rag75") return 75;
+    if (coupon === "rag99") return 99;
     return 0;
   };
 
